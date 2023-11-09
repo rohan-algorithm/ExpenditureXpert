@@ -6,6 +6,13 @@ import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
 
+
+
+//data import
+import User from "./models/User.js"
+import {dataUser} from "./data/index.js"
+
+
 /* CONFIGURATION */
 dotenv.config();
 const app = express();
@@ -24,7 +31,7 @@ import salesRoutes from "./routes/sales.js";
 /* ROUTES */
 app.use("/client", clientRoutes);
 app.use("/general", generalRoutes);
-app.use("/transections", transectionsRoutes);
+app.use("/transactions", transectionsRoutes);
 app.use("/sales", salesRoutes);
 
 
@@ -32,8 +39,8 @@ app.use("/sales", salesRoutes);
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 9000;
 mongoose.connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+    // useNewUrlParser: true,
+    // useUnifiedTopology: true,
   }).then(() => {
     app.listen(PORT, () => console.log(`Server Port: ${PORT}`));
 

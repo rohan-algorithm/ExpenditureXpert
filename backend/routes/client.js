@@ -1,5 +1,16 @@
-import  Express from "express";
+import express from "express";
+import {
+//   getProducts,
+//   getCustomers,
+  getTransactions,
+//   getGeography,
+} from "../controllers/client.js";
 
-const Router = Express.Router();
+const router = express.Router();
 
-export default Router
+// router.get("/products", getProducts);
+// router.get("/customers", getCustomers);
+router.get("/transactions", getTransactions);
+// router.get("/geography", getGeography);
+
+export default router;
