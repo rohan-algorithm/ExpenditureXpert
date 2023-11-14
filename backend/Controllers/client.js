@@ -7,6 +7,7 @@ import Transaction from "../models/Transactions.js";
 export const getTransactions = async (req, res) => {
     try {
       // sort should look like this: { "field": "userId", "sort": "desc"}
+      console.log(1);
       const { page = 1, pageSize = 20, sort = null, search = "" } = req.query;
   
       // formatted sort should look like { userId: -1 }
@@ -42,3 +43,4 @@ export const getTransactions = async (req, res) => {
       res.status(404).json({ message: error.message });
     }
   };
+

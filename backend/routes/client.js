@@ -3,14 +3,17 @@ import {
 //   getProducts,
 //   getCustomers,
   getTransactions,
+  // addTransactions,
 //   getGeography,
 } from "../controllers/client.js";
 
-const router = express.Router();
+const router = express();
 
 // router.get("/products", getProducts);
 // router.get("/customers", getCustomers);
-router.get("/transactions", getTransactions);
+router.get("/create", getTransactions);
+
+
 // router.get("/geography", getGeography);
 
 export default router;

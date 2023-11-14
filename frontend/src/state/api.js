@@ -13,6 +13,7 @@ export const api = createApi({  //base url
     "Admins",
     "Performance",
     "Dashboard",
+
   ],
   endpoints: (build) => ({
     getUser: build.query({  
@@ -29,7 +30,7 @@ export const api = createApi({  //base url
     }),
     getTransactions: build.query({
       query: ({ page, pageSize, sort, search }) => ({
-        url: "client/transactions",
+        url: "create",
         method: "GET",
         params: { page, pageSize, sort, search },
       }),
@@ -55,6 +56,7 @@ export const api = createApi({  //base url
       query: () => "general/dashboard",
       providesTags: ["Dashboard"],
     }),
+    
   }),
 });
 
@@ -68,4 +70,5 @@ export const {
   useGetAdminsQuery,
   useGetUserPerformanceQuery,
   useGetDashboardQuery,
+
 } = api;
