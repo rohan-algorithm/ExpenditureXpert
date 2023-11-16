@@ -1,63 +1,194 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, useTheme } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-import Dialog  from 'component/Dialog'
-
-const Transactions = () => {
-  const theme = useTheme();
-  const [transactions, setTransactions] = useState([]);
+import {
+  useTheme,
+  Table,
+  TableContainer,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Paper,
+  CircularProgress,
+  TextField,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+} from '@mui/material';
+import Header from 'component/Header';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import AddExpense from '../../component/AddExpanse'; //
+const ExpenseTable = () => {
+  const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedExpense, setSelectedExpense] = useState(null);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const theme = useTheme();
 
   useEffect(() => {
-    axios.get('http://localhost:5001/create')
-      .then(response => {
-        setTransactions(response.data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching transactions:', error);
-        setLoading(false);
-      });
-  }, []);
+    fetchData();
+  }, [currentPage]);
 
-  const columns = [
-    { field: '_id', headerName: 'ID', flex: 1 },
-    { field: 'userId', headerName: 'User ID', flex: 1 },
-    { field: 'createdAt', headerName: 'CreatedAt', flex: 1 },
-    { field: 'products', headerName: '# of Products', flex: 0.5, sortable: false },
-    { field: 'cost', headerName: 'Cost', flex: 1, valueFormatter: ({ value }) => `$${Number(value).toFixed(2)}` },
-  ];
+  const fetchData = async () => {
+    try {
+      const id = sessionStorage.getItem('id');
+      const response = await axios.get(`http://localhost:5001/api/v2/getExpenses/${id}`, {
+        params: {
+          page: currentPage,
+          limit: 20,
+        },
+      });
+      setExpenses(response.data.expenses);
+      setTotalPages(Math.ceil(response.data.totalExpenses / 20));
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteExpense = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5001/api/v2/deleteExpense/${id}`);
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+    }
+  };
+
+  const handleEditExpense = (expense) => {
+    setSelectedExpense(expense);
+    setOpenEditDialog(true);
+  };
+
+  const handleCloseEditDialog = () => {
+    setSelectedExpense(null);
+    setOpenEditDialog(false);
+  };
+
+  const handleUpdateExpense = async () => {
+    try {
+      await axios.put(`http://localhost:5001/api/v2/updateExpense/${selectedExpense._id}`, selectedExpense);
+      setOpenEditDialog(false);
+      setSelectedExpense(null);
+      fetchData();
+    } catch (error) {
+      console.error('Error updating expense:', error);
+    }
+  };
+
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedExpense({ ...selectedExpense, [name]: value });
+  };
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+  };
 
   return (
-    <Box m="1.5rem 2.5rem">
-      {/* ... Header and other components */}
-      <Box 
-        height="80vh"
-        className="marginButtom"
-        sx={{
-          "& .MuiDataGrid-root": { border: "none" },
-          "& .MuiDataGrid-cell": { borderBottom: "none" },
-          // ... other styles
-        }}
-      >
-        <Dialog/>
-        <DataGrid
-          loading={loading}
-          rows={transactions}
-          columns={columns}
-          pageSize={10}
-          rowHeight={40}
-          checkboxSelection={false}
-          disableSelectionOnClick
-          pagination
-          paginationMode="server"
-          sortingMode="server"
-          // ... other props
-        />
-      </Box>
-    </Box>
+    <>
+      <Header title="TRANSACTIONS" subtitle="Entire list of transactions" />
+      <AddExpense/>
+      <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
+        <DialogTitle>Edit Expense</DialogTitle>
+        <DialogContent>
+          <TextField
+            name="name"
+            label="Expense name"
+            value={selectedExpense ? selectedExpense.name : ''}
+            onChange={handleEditInputChange}
+          />
+          <TextField
+            name="amount"
+            label="Amount"
+            value={selectedExpense ? selectedExpense.amount : ''}
+            onChange={handleEditInputChange}
+          />
+          <TextField
+            name="date"
+            label="Date"
+            value={selectedExpense ? selectedExpense.date : ''}
+            onChange={handleEditInputChange}
+          />
+          <TextField
+            name="time"
+            label="Time"
+            value={selectedExpense ? selectedExpense.time : ''}
+            onChange={handleEditInputChange}
+          />
+          <TextField
+            name="category"
+            label="Category"
+            value={selectedExpense ? selectedExpense.category : ''}
+            onChange={handleEditInputChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEditDialog}>Cancel</Button>
+          <Button onClick={handleUpdateExpense}>Update</Button>
+        </DialogActions>
+      </Dialog>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText }}>
+              <TableCell>Expense name</TableCell>
+              <TableCell>Amount</TableCell>
+              <TableCell>Date</TableCell>
+              <TableCell>Time</TableCell>
+              <TableCell>Category</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={6} align="center">
+                  <CircularProgress />
+                </TableCell>
+              </TableRow>
+            ) : (
+              expenses.map((expense) => (
+                <TableRow key={expense._id}>
+                  <TableCell>{expense.name}</TableCell>
+                  <TableCell>{expense.amount}</TableCell>
+                  <TableCell>{new Date(expense.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{new Date(expense.time).toLocaleTimeString()}</TableCell>
+                  <TableCell>{expense.category}</TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => handleEditExpense(expense)}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton onClick={() => handleDeleteExpense(expense._id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <div>
+        <Button onClick={handlePrevPage} disabled={currentPage === 1}>
+          Previous Page
+        </Button>
+        <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
+          Next Page
+        </Button>
+      </div>
+    </>
   );
 };
 
-export default Transactions;
+export default ExpenseTable;

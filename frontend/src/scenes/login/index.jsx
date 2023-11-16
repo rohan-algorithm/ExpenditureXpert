@@ -14,13 +14,13 @@ const Login = () => {
         event.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:5001/login', { email, password });
-            if (response.data === 'Success') {
-                localStorage.setItem('token', 'yourTokenHere'); // Replace with the actual token received from the backend
+            const response = await axios.post('http://localhost:5001/api/v1/signin', { email, password });
+            if (response.status === 200) {
+                sessionStorage.setItem('id', response.data.others._id); // Session Storage UserID Store
                 alert('Login successful!');
                 navigate('/dashboard');
             } else {
-                alert('Incorrect password! Please try again.');
+                alert('Incorrect email or password! Please try again.');
             }
         } catch (error) {
             console.log(error);

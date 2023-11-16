@@ -10,23 +10,23 @@ const Register = () => {
     const [password, setPassword] = useState();
     const navigate = useNavigate();
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async(event) => {
         event.preventDefault();
         
-        axios.post( 'http://localhost:5001/register', {name, email, password})
-        .then(result => {
-            console.log(result);
-            if(result.data === "Already registered"){
+        try {
+            const response = await axios.post('http://localhost:5001/api/v1/signup', { name, email, password });
+            if (response.status === 201) {
+                alert("Registered successfully! Please Login to proceed.")
+                navigate('/login');
+            } else if (response.status === 500) {
+                alert("Error registering user.");
+            } else {
                 alert("E-mail already registered! Please Login to proceed.");
                 navigate('/login');
             }
-            else{
-                alert("Registered successfully! Please Login to proceed.")
-                navigate('/login');
-            }
-            
-        })
-        .catch(err => console.log(err));
+        } catch (error) {
+            console.log(error);
+        }
     }
 
 

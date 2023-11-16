@@ -17,7 +17,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { DesktopDatePicker, DesktopTimePicker } from '@mui/x-date-pickers';
 import axios from "axios";
 
-
+let id = sessionStorage.getItem("id");
 const AddExpensePopup = () => {
   const [open, setOpen] = useState(false);
   const [expense, setExpense] = useState({
@@ -70,21 +70,21 @@ const AddExpensePopup = () => {
     category: expense.category,
     date: expense.date,
     time: expense.time,
+    id:id,
   }
   
 
-    axios.post('http://localhost:5001/create', newExpense)
+    axios.post('http://localhost:5001/api/v2/addExpanse', newExpense)
     .then(response => {
       console.log('Data sent to the server:', response.data);
       // Perform any necessary actions upon successful data submission
     })
     .catch(error => {
-      console.log(expense);
       console.error('Error while sending data:', error);
       // Handle errors here
     });
-    console.log(expense);
-    // handleClose();
+
+    handleClose();
   };
 
   return (
