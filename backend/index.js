@@ -9,9 +9,6 @@ import auth from "./routes/auth.js";
 import expanse from "./routes/expanses.js";
 
 
-const Router = express.Router();
-
-
 /* CONFIGURATION */
 dotenv.config();
 const app = express();
@@ -31,7 +28,7 @@ app.use("/api/v1", auth);
 app.use("/api/v2", expanse);
 
 app.get('/',async(req,res)=>{
-   res.send("hi");
+  //  res.send("hi");
   //  const data = await TransactionSchema.find({});
   //  res.json({success:true,data:data});
 })
@@ -45,15 +42,6 @@ const PORT = process.env.PORT || 9000;
 mongoose.connect(process.env.MONGO_URL, {
   }).then(() => {
     app.listen(PORT, () => console.log(`Server Port: ${PORT}`));
-
-    /* ONLY ADD DATA ONE TIME */
-    // AffiliateStat.insertMany(dataAffiliateStat);
-    // OverallStat.insertMany(dataOverallStat);
-    // Product.insertMany(dataProduct);
-    // ProductStat.insertMany(dataProductStat);
-    // Transaction.insertMany(dataTransaction);
-    // User.insertMany(dataUser);
-      
   })
   .catch((error) => console.log(`${error} did not connect`));
 

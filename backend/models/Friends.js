@@ -1,0 +1,24 @@
+import mongoose from 'mongoose';
+
+const friendsInfo = new mongoose.Schema({
+    userId: {
+        type: mongoose.Types.ObjectId,
+        ref: 'user',
+        required: true,
+    },
+    friendId: {
+        type: mongoose.Types.ObjectId,
+        ref: 'user',
+        required: true,
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'accepted', 'rejected'],
+        default: 'pending',
+    },
+    // Additional fields related to friendship can be added here
+});
+
+const friendsModel = mongoose.model('friends', friendsInfo);
+
+export default friendsModel;

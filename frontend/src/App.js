@@ -12,7 +12,6 @@ import Login from "scenes/login";
 import Signup from "scenes/signup";
 import  Home  from "scenes/home";
 function App() {
-   const token = localStorage.getItem("token");
   const mode = useSelector((state) => state.global.mode);    //material ui setup
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
   return (<div className="App">

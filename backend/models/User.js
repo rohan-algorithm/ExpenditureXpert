@@ -16,7 +16,11 @@ const userInfo = new mongoose.Schema({
     expanses:[{
         type:mongoose.Types.ObjectId,
         ref:'expanses',
-    }]
+    }],
+    friends: [{
+        type: mongoose.Types.ObjectId,
+        ref: 'friends',
+    }],
 })
 
 const userModel = mongoose.model('user', userInfo);
