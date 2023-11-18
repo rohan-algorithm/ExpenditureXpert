@@ -1,15 +1,18 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useDispatch } from 'react-redux'; // Import useDispatch
+
+import { login } from '../../state/index'; // Import login action from globalSlice
+
 
 const Login = () => {
+    
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
-
+    const dispatch = useDispatch(); // Get dispatch function
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -17,8 +20,10 @@ const Login = () => {
             const response = await axios.post('http://localhost:5001/api/v1/signin', { email, password });
             if (response.status === 200) {
                 sessionStorage.setItem('id', response.data.others._id); // Session Storage UserID Store
+                dispatch(login({ userId: response.data.others._id }));
                 alert('Login successful!');
                 navigate('/dashboard');
+                
             } else {
                 alert('Incorrect email or password! Please try again.');
             }

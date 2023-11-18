@@ -17,10 +17,27 @@ const userInfo = new mongoose.Schema({
         type:mongoose.Types.ObjectId,
         ref:'expanses',
     }],
-    friends: [{
-        type: mongoose.Types.ObjectId,
-        ref: 'friends',
-    }],
+    friends:{
+        type: [{
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'user',
+        }],
+        default: [],
+    },
+    pendingRequests: {
+        type: [{
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'user',
+        }],
+        default: [],
+    },
+     availableRequests: {
+        type: [{
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'user',
+        }],
+        default: [],
+    },
 })
 
 const userModel = mongoose.model('user', userInfo);

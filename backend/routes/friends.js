@@ -1,105 +1,89 @@
-import Express from "express";
-import User from "../models/User.js";
-import Expanses from "../models/Expanses.js";
-const Router = Express.Router();
+import express from 'express';
+import User from '../models/User.js';
 
+const router = express.Router();
 
-//Create New Expanse
-Router.post("/addFriend", async (req, res) => {
+// Add friend request
+router.post('/add-friend/:userId', async (req, res) => {
     try {
-        const { name, email} = req.body;
+      const { userId } = req.params;
+      const {email : friendMail} = req.body;
+      const friendId = await User.findOne({ email: friendMail });
+      const user = await User.findById(userId);
+      const friend = await User.findById(friendId);
+      console.log(user);
+      console.log(friend);
 
-        // Find user by email
-        const existingUser = await User.findById(email);
-
-        if (existingUser) {
-            const expanse = new Expanses({ name, amount, category,date,time, user: existingUser });
-            await expanse.save();
-
-            // Push expanse to user's expanses and save the user
-            existingUser.expanses.push(expanse);
-            await existingUser.save();
-
-            return res.status(200).json({ expanse });
-        } else {
-            return res.status(404).json({ message: "User not found" });
-        }
+      if (!user || !friend) {
+        return res.status(404).json({ message: 'User or friend not found' });
+      }
+      //exception
+  
+      user.pendingRequests.push(friendId);
+      friend.availableRequests.push(userId);
+  
+      await user.save();
+      await friend.save();
+  
+      res.status(200).json({ message: 'Friend request sent successfully' });
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Internal Server Error" });
+      res.status(500).json({ message: 'Error sending friend request', error: error.message });
     }
-});
-
-
-
-//Fetch Expanses
-Router.get("/getExpenses/:id", async (req, res) => {
+  });
+  
+// Confirm friend request - PUT method
+router.put('/confirm-friend/:userId/:friendId', async (req, res) => {
     try {
-        const { id } = req.params;
-
-        // Find user by email
-        const existingUser = await User.findById(id).populate('expanses');
-
-        if (existingUser) {
-            return res.status(200).json({ expenses: existingUser.expanses });
-        } else {
-            return res.status(404).json({ message: "User not found" });
-        }
+      const { userId, friendId } = req.params;
+  
+      const user = await User.findById(userId);
+      const friend = await User.findById(friendId);
+  
+      if (!user || !friend) {
+        return res.status(404).json({ message: 'User or friend not found' });
+      }
+  
+      if (!friend.availableRequests.includes(userId)) {
+        return res.status(400).json({ message: 'Friend request not found or already accepted' });
+      }
+  
+      user.pendingRequests = user.pendingRequests.filter(id => id.toString() !== friendId);
+      friend.availableRequests = friend.availableRequests.filter(id => id.toString() !== userId);
+  
+      user.friends.push(friendId);
+      friend.friends.push(userId);
+  
+      await user.save();
+      await friend.save();
+  
+      res.status(200).json({ message: 'Friend request confirmed successfully' });
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Internal Server Error" });
+      res.status(500).json({ message: 'Error confirming friend request', error: error.message });
     }
-});
+  });
+  
 
-// Update Expanse
-Router.put("/updateExpense/:Id", async (req, res) => {
+// Fetch user's friends
+router.get('/get-friends/:userId', async (req, res) => {
+    const { userId } = req.params;
+  
     try {
-        const { Id } = req.params;
-        const { name, amount, category } = req.body;
-
-        // Find the expense by ID and update it
-        const updatedExpanse = await Expanses.findByIdAndUpdate(
-            Id,
-            { name, amount, category },
-            // { new: true }
-        );
-
-        if (updatedExpanse) {
-            return res.status(200).json({ expanse: updatedExpanse });
-        } else {
-            return res.status(404).json({ message: "Expense not found" });
-        }
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Internal Server Error" });
+      const user = await User.findById(userId).populate('friends', 'name email'); // Populate friend details
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+    
+      const friendsList = user.friends.map(friend => ({
+        id: friend._id,
+        username: friend.name,
+        email: friend.email,
+      }));
+  
+      res.status(200).json({ friends: friendsList });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
     }
-});
-
-
-//Delete Expanse
-Router.delete("/deleteExpense/:expanseId", async (req, res) => {
-    try {
-        const { expanseId } = req.params;
-        // Find the expense by ID and delete it
-        const deletedExpanse = await Expanses.findByIdAndDelete(expanseId);
-
-        if (deletedExpanse) {
-            // Remove the deleted expense from the associated user's expanses
-            const associatedUser = await User.findById(deletedExpanse.user);
-            if (associatedUser) {
-                associatedUser.expanses.pull(expanseId);
-                await associatedUser.save();
-            }
-            return res.status(200).json({ message: "Expense deleted successfully" });
-        } else {
-            return res.status(404).json({ message: "Expense not found" });
-        }
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Internal Server Error" });
-    }
-});
-
-
-
-export default Router;
+  });
+  
+export default router;

@@ -17,8 +17,9 @@ export const api = createApi({  //base url
   ],
   endpoints: (build) => ({
     getUser: build.query({  
-      query: (id) => `general/user/${id}`,  //from route
-      providesTags: ["User"],
+      
+      query: (id) => `api/v4/user/${id}`,  //from route
+      providesTags: ["user"],
     }),
     getProducts: build.query({
       query: () => "client/products",
@@ -30,7 +31,7 @@ export const api = createApi({  //base url
     }),
     getTransactions: build.query({
       query: ({id}) => ({
-        url: `api/v2/getExpenses`,
+        url: `api/v2/getExpenses/${id}`,
         method: "GET",
         params: { id },
       }),

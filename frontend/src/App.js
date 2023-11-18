@@ -11,6 +11,8 @@ import Transactions from "scenes/transactions";
 import Login from "scenes/login";
 import Signup from "scenes/signup";
 import  Home  from "scenes/home";
+import  Friends  from "scenes/friends";
+
 function App() {
   const mode = useSelector((state) => state.global.mode);    //material ui setup
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
@@ -25,7 +27,8 @@ function App() {
            <Route element={<Layout/>}>
                 <Route path="/dashboard" exact element={<Dashboard />} />
                <Route path="/dashboard" exact element={<Dashboard />} />
-               <Route path="/transactions" element={<Transactions />} />             
+               <Route path="/transactions" element={<Transactions />} />     
+               <Route path="/friends" element={<Friends />} />             
            </Route>
         </Routes>
        </ThemeProvider>

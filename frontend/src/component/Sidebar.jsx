@@ -17,8 +17,15 @@ import {
   ChevronLeft,
   ChevronRightOutlined,
   HomeOutlined,
+  ShoppingCartOutlined,
+  Groups2Outlined,
   ReceiptLongOutlined,
   PublicOutlined,
+  PointOfSaleOutlined,
+  TodayOutlined,
+  CalendarMonthOutlined,
+  AdminPanelSettingsOutlined,
+  TrendingUpOutlined,
   PieChartOutlined,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
@@ -44,6 +51,10 @@ const navItems = [
     text: "Breakdown",
     icon: <PieChartOutlined />,
   },
+  {
+    text: "Friends",
+    icon: <PieChartOutlined />,
+  },
   
 ];
 
@@ -54,7 +65,6 @@ const Sidebar = ({
   setIsSidebarOpen,
   isNonMobile,
 }) => {
-  
   const { pathname } = useLocation();
   const [active, setActive] = useState("");
   const navigate = useNavigate();
@@ -173,7 +183,7 @@ const Sidebar = ({
                   fontSize="0.8rem"
                   sx={{ color: theme.palette.secondary[200] }}
                 >
-                  {user.occupation}
+                  {user.email}
                 </Typography>
               </Box>
               <SettingsOutlined

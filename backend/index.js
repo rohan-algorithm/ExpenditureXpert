@@ -7,6 +7,8 @@ import helmet from "helmet";
 import morgan from "morgan";
 import auth from "./routes/auth.js";
 import expanse from "./routes/expanses.js";
+import friends from "./routes/friends.js";
+import userInfo from "./routes/user.js";
 
 
 /* CONFIGURATION */
@@ -26,6 +28,8 @@ app.use(cors());
 
 app.use("/api/v1", auth);
 app.use("/api/v2", expanse);
+app.use("/api/v3", friends);
+app.use("/api/v4", userInfo);
 
 app.get('/',async(req,res)=>{
   //  res.send("hi");

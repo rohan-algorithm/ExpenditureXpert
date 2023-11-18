@@ -16,7 +16,14 @@ const friendsInfo = new mongoose.Schema({
         enum: ['pending', 'accepted', 'rejected'],
         default: 'pending',
     },
-    // Additional fields related to friendship can be added here
+    amountOwed: {
+        type: Number,
+        default: 0,
+    },
+    amountLent: {
+        type: Number,
+        default: 0,
+    },
 });
 
 const friendsModel = mongoose.model('friends', friendsInfo);
