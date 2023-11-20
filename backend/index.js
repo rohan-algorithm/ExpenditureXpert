@@ -9,6 +9,7 @@ import auth from "./routes/auth.js";
 import expanse from "./routes/expanses.js";
 import friends from "./routes/friends.js";
 import userInfo from "./routes/user.js";
+import Graphs from "./routes/pie.js";
 
 
 /* CONFIGURATION */
@@ -24,12 +25,13 @@ app.use(cors());
 
 
 
-// /* ROUTES */
+/* ROUTES */
 
 app.use("/api/v1", auth);
 app.use("/api/v2", expanse);
 app.use("/api/v3", friends);
 app.use("/api/v4", userInfo);
+app.use("/api/v5", Graphs);
 
 app.get('/',async(req,res)=>{
   //  res.send("hi");

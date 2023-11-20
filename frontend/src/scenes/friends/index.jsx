@@ -12,6 +12,7 @@ import {
   CircularProgress,
   Button,
   TextField,
+  Box,
 } from '@mui/material';
 import Header from 'component/Header';
 
@@ -35,6 +36,7 @@ const FriendList = () => {
           limit: 20,
         },
       });
+      console.log(response.data.friends);
       setFriends(response.data.friends);
       setTotalPages(Math.ceil(response.data.totalFriends / 20));
       setLoading(false);
@@ -74,33 +76,36 @@ const FriendList = () => {
     <>
       <Header title="Friends" subtitle="Entire list of Friends" />
       {/* Form for adding a friend */}
-      <TextField
+      <Box diisplay="flex" alignItems="center" justifyContent="center" height="10vh">
+        <TextField
           label="Friend's Email"
           value={newFriendEmail}
           onChange={(e) => setNewFriendEmail(e.target.value)}
+          sx={{ mr: 5 }}
         />
         <Button
-  onClick={handleAddFriend}
-  disabled={addingFriend || newFriendEmail.trim() === ''}
-  sx={{
-    backgroundColor: '#1976D2',
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#115293',
-    },
-    '&:disabled': {
-      backgroundColor: '#CCCCCC',
-      color: 'rgba(255, 255, 255, 0.7)',
-      cursor: 'not-allowed',
-    },
-  }}
->
-  Add Friend
-</Button>
+          onClick={handleAddFriend}
+          disabled={addingFriend || newFriendEmail.trim() === ''}
+          sx={{
+            backgroundColor: '#1976D2',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: '#115293',
+            },
+            '&:disabled': {
+              backgroundColor: '#CCCCCC',
+              color: 'rgba(255, 255, 255, 0.7)',
+              cursor: 'not-allowed',
+            },
+          }}
+        >
+          Add Friend
+        </Button>
+      </Box>
 
       <TableContainer component={Paper}>
         <Table>
-          <TableHead>
+        <TableHead>
             <TableRow style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText }}>
               <TableCell>Friend Name</TableCell>
               <TableCell>Email</TableCell>
@@ -120,8 +125,8 @@ const FriendList = () => {
                 <TableRow key={friend._id}>
                   <TableCell>{friend.name}</TableCell>
                   <TableCell>{friend.email}</TableCell>
-                  <TableCell>{friend.debitAmt}</TableCell>
-                  <TableCell>{friend.creditAmt}</TableCell>
+                  <TableCell>{friend.amountOwed }</TableCell>
+                  <TableCell>{friend.amountLent}</TableCell>
                 </TableRow>
               ))
             )}

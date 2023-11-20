@@ -12,6 +12,7 @@ import Login from "scenes/login";
 import Signup from "scenes/signup";
 import  Home  from "scenes/home";
 import  Friends  from "scenes/friends";
+import  Overview  from "scenes/overview";
 
 function App() {
   const mode = useSelector((state) => state.global.mode);    //material ui setup
@@ -28,7 +29,8 @@ function App() {
                 <Route path="/dashboard" exact element={<Dashboard />} />
                <Route path="/dashboard" exact element={<Dashboard />} />
                <Route path="/transactions" element={<Transactions />} />     
-               <Route path="/friends" element={<Friends />} />             
+               <Route path="/friends" element={<Friends />} />  
+               <Route path="/overview" element={<Overview />} />             
            </Route>
         </Routes>
        </ThemeProvider>

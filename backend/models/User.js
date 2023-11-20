@@ -17,13 +17,20 @@ const userInfo = new mongoose.Schema({
         type:mongoose.Types.ObjectId,
         ref:'expanses',
     }],
-    friends:{
-        type: [{
+    friends: [{
+      friendId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'user',
-        }],
-        default: [],
-    },
+          ref: 'user', // Reference to other users (friends)
+      },
+      amountOwed: {
+          type: Number,
+          default: 0,
+      },
+      amountLent: {
+          type: Number,
+          default: 0,
+      },
+  }],
     pendingRequests: {
         type: [{
           type: mongoose.Schema.Types.ObjectId,
@@ -37,6 +44,18 @@ const userInfo = new mongoose.Schema({
           ref: 'user',
         }],
         default: [],
+    },
+    budget: {
+      type: Number,
+      default: 0,
+    },
+    amountOwed: {
+      type: Number,
+      default: 0,
+    },
+    amountLent: {
+      type: Number,
+      default: 0,
     },
 })
 

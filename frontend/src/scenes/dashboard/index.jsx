@@ -16,10 +16,12 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-// import BreakdownChart from "component/BreakdownChart";
+import BreakdownChart from "../../scenes/overview";
+import Expenses from "../../scenes/transactions";
+
 // import OverviewChart from "component/OverviewChart";
 import { useGetDashboardQuery } from "state/api";
-// import StatBox from "component/StatBox";
+import Card from "component/Card";
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -89,28 +91,7 @@ const Dashboard = () => {
         }}
       >
         {/* ROW 1 */}
-        {/* <StatBox
-          title="Total Customers"
-          value={data && data.totalCustomers}
-          increase="+14%"
-          description="Since last month"
-          icon={
-            <Email
-              sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
-            />
-          }
-        />
-        <StatBox */}
-          title="Sales Today"
-          value={data && data.todayStats.totalSales}
-          increase="+21%"
-          description="Since last month"
-          icon={
-            <PointOfSale
-              sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
-            />
-          }
-        />
+        
         <Box
           gridColumn="span 8"
           gridRow="span 2"
@@ -118,8 +99,10 @@ const Dashboard = () => {
           p="1rem"
           borderRadius="0.55rem"
         >
+           {/* <Card/> */}
           {/* <OverviewChart view="sales" isDashboard={true} /> */}
         </Box>
+      
         {/* <StatBox
           title="Monthly Sales"
           value={data && data.thisMonthStats.totalSales}
@@ -173,12 +156,7 @@ const Dashboard = () => {
             },
           }}
         >
-          <DataGrid
-            loading={isLoading || !data}
-            getRowId={(row) => row._id}
-            rows={(data && data.transactions) || []}
-            columns={columns}
-          />
+          <Expenses/>
         </Box>
         <Box
           gridColumn="span 4"
@@ -190,7 +168,7 @@ const Dashboard = () => {
           <Typography variant="h6" sx={{ color: theme.palette.secondary[100] }}>
             Sales By Category
           </Typography>
-          {/* <BreakdownChart isDashboard={true} /> */}
+          <BreakdownChart isDashboard={true} />
           <Typography
             p="0 0.6rem"
             fontSize="0.8rem"

@@ -17,15 +17,10 @@ import {
   ChevronLeft,
   ChevronRightOutlined,
   HomeOutlined,
-  ShoppingCartOutlined,
-  Groups2Outlined,
+  People,
   ReceiptLongOutlined,
   PublicOutlined,
-  PointOfSaleOutlined,
-  TodayOutlined,
-  CalendarMonthOutlined,
-  AdminPanelSettingsOutlined,
-  TrendingUpOutlined,
+  Timeline,
   PieChartOutlined,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
@@ -49,10 +44,14 @@ const navItems = [
   
   {
     text: "Breakdown",
-    icon: <PieChartOutlined />,
+    icon: <Timeline />,
   },
   {
     text: "Friends",
+    icon: <People />,
+  },
+  {
+    text: "Overview",
     icon: <PieChartOutlined />,
   },
   

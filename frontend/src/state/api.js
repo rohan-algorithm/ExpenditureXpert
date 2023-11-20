@@ -17,7 +17,6 @@ export const api = createApi({  //base url
   ],
   endpoints: (build) => ({
     getUser: build.query({  
-      
       query: (id) => `api/v4/user/${id}`,  //from route
       providesTags: ["user"],
     }),
@@ -30,10 +29,10 @@ export const api = createApi({  //base url
       providesTags: ["Customers"],
     }),
     getTransactions: build.query({
-      query: ({id}) => ({
-        url: `api/v2/getExpenses/${id}`,
+      query: ({ page, pageSize, sort, search ,id}) => ({
+        url: `/getExpenses/${id}`,
         method: "GET",
-        params: { id },
+        params: { page, pageSize, sort, search,id },
       }),
       providesTags: ["Transactions"],
     }),

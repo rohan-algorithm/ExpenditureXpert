@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Box,
   Button,
 } from '@mui/material';
 import Header from 'component/Header';
@@ -98,8 +99,10 @@ const ExpenseTable = () => {
   return (
     <>
       <Header title="TRANSACTIONS" subtitle="Entire list of transactions" />
-      <AddExpense/>
-      <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
+      <Box height="8vh">
+      <AddExpense />
+      </Box>
+      <Dialog open={openEditDialog} onClose={handleCloseEditDialog} >
         <DialogTitle>Edit Expense</DialogTitle>
         <DialogContent>
           <TextField
