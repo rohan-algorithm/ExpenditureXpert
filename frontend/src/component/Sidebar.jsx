@@ -26,8 +26,9 @@ import {
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FlexBetween from "./FlexBetween";
-import profileImage from "assets/profileImage.avif";
+import profileImage from "assets/profileImage.png";
 
+import BarChartIcon from '@mui/icons-material/BarChart';
 const navItems = [
   {
     text: "Dashboard",
@@ -38,12 +39,7 @@ const navItems = [
     icon: <ReceiptLongOutlined />,
   },
   {
-    text: "Analytics",
-    icon: <PublicOutlined />,
-  },
-  
-  {
-    text: "Breakdown",
+    text: "Line",
     icon: <Timeline />,
   },
   {
@@ -53,6 +49,10 @@ const navItems = [
   {
     text: "Overview",
     icon: <PieChartOutlined />,
+  },
+  {
+    text: "Bar",
+    icon: <BarChartIcon />,
   },
   
 ];
@@ -182,7 +182,7 @@ const Sidebar = ({
                   fontSize="0.8rem"
                   sx={{ color: theme.palette.secondary[200] }}
                 >
-                  {user.email}
+                  {user.budget}
                 </Typography>
               </Box>
               <SettingsOutlined

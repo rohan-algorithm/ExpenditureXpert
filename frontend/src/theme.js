@@ -15,18 +15,18 @@ export const tokensDark = {
           1000: "#eeeeee"
     },
     primary: {
-      // blue
-      // blue: {
-          100: "#d1ebf2",
-          200: "#a4d7e5",
-          300: "#76c3d8",
-          400: "#49afcb",
-          500: "#1b9bbe",
-          600: "#167c98",
-          700: "#105d72",
-          800: "#0b3e4c",
-          900: "#051f26"
+      // indigo: {
+          100: "#d9dae3",
+          200: "#b3b6c7",
+          300: "#8e91ac",
+          400: "#686d90",
+          500: "#424874",
+          600: "#353a5d",
+          700: "#282b46",
+          800: "#1a1d2e",
+          900: "#0d0e17"
 // },
+
     },
     secondary: {
       // yellow
@@ -92,21 +92,21 @@ export const tokensDark = {
               // palette values for light mode
               primary: {
                 ...tokensLight.primary,
-                main: tokensDark.grey[50],
+                main: tokensDark.grey[100],
                 light: tokensDark.grey[100],
               },
               secondary: {
                 ...tokensLight.secondary,
-                main: tokensDark.secondary[600],
-                light: tokensDark.secondary[700],
+                main: tokensDark.secondary[800],
+                light: tokensDark.secondary[900],
               },
               neutral: {
                 ...tokensLight.grey,
-                main: tokensDark.grey[500],
+                main: tokensDark.grey[0],
               },
               background: {
-                default: tokensDark.grey[0],
-                alt: tokensDark.grey[50],
+                default: tokensDark.grey[600],
+                alt: tokensDark.grey[100],
               },
             }),
       },

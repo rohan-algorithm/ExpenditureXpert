@@ -18,6 +18,8 @@ Router.post("/addExpanse", async (req, res) => {
 
             // Push expanse to user's expanses and save the user
             existingUser.expanses.push(expanse);
+            existingUser.budget -= amount;
+
             await existingUser.save();
 
             return res.status(200).json({ expanse });
@@ -61,7 +63,6 @@ Router.put("/updateExpense/:Id", async (req, res) => {
         const updatedExpanse = await Expanses.findByIdAndUpdate(
             Id,
             { name, amount, category },
-            // { new: true }
         );
 
         if (updatedExpanse) {
@@ -88,6 +89,7 @@ Router.delete("/deleteExpense/:expanseId", async (req, res) => {
             const associatedUser = await User.findById(deletedExpanse.user);
             if (associatedUser) {
                 associatedUser.expanses.pull(expanseId);
+                existingUser.budget +=  parseInt(deletedExpanse.amount);
                 await associatedUser.save();
             }
             return res.status(200).json({ message: "Expense deleted successfully" });

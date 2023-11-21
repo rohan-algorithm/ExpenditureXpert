@@ -23,7 +23,7 @@ import Header from 'component/Header';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddExpense from '../../component/AddExpanse'; //
-const ExpenseTable = () => {
+const ExpenseTable = ({ dash }) => {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedExpense, setSelectedExpense] = useState(null);
@@ -98,10 +98,15 @@ const ExpenseTable = () => {
 
   return (
     <>
-      <Header title="TRANSACTIONS" subtitle="Entire list of transactions" />
-      <Box height="8vh">
-      <AddExpense />
-      </Box>
+  
+        {dash.is === '1' && (
+        <>
+          <Header title="TRANSACTIONS" subtitle="Entire list of transactions" />
+          <Box height="8vh">
+            <AddExpense />
+          </Box>
+        </>
+      )}
       <Dialog open={openEditDialog} onClose={handleCloseEditDialog} >
         <DialogTitle>Edit Expense</DialogTitle>
         <DialogContent>
@@ -141,10 +146,10 @@ const ExpenseTable = () => {
           <Button onClick={handleUpdateExpense}>Update</Button>
         </DialogActions>
       </Dialog>
-      <TableContainer component={Paper}>
-        <Table>
+      <TableContainer  component={Paper} style={{ border: '2px solid', borderColor: 'white'}}>
+        <Table style={{ backgroundColor: theme.palette.primary[500], color: theme.palette.primary.main }}>
           <TableHead>
-            <TableRow style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText }}>
+            <TableRow style={{ backgroundColor: theme.palette.primary[700], color: theme.palette.primary.contrastText }}>
               <TableCell>Expense name</TableCell>
               <TableCell>Amount</TableCell>
               <TableCell>Date</TableCell>

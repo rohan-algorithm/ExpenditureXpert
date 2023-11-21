@@ -7,20 +7,27 @@ import {
   Search,
   SettingsOutlined,
   NotificationsOutlined,
+  ArrowDropDownOutlined,
+  AttachMoney, // Add the currency icon
 } from "@mui/icons-material";
 import {
   AppBar,
   IconButton,
+  Menu,
+  MenuItem,
   InputBase,
   Toolbar,
   Box,
   Typography,
-  useTheme,
   Button,
+  useTheme,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { setMode } from "state";
-const Navbar = ({ userId,isSidebarOpen, setIsSidebarOpen }) => {
+import FlexBetween from "../component/FlexBetween";
+import profileImage from "assets/profileImage.png";
+
+const Navbar = ({ userId, isSidebarOpen, setIsSidebarOpen }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const [showFriendRequests, setShowFriendRequests] = useState(false);
@@ -30,7 +37,7 @@ const Navbar = ({ userId,isSidebarOpen, setIsSidebarOpen }) => {
   const isOpen = Boolean(anchorEl);
    
   const user = sessionStorage.getItem('id');
-  // console.log(user);
+
   useEffect(() => {
     const fetchPendingRequests = async () => {
       try {
@@ -55,7 +62,7 @@ const Navbar = ({ userId,isSidebarOpen, setIsSidebarOpen }) => {
 
   const handleConfirmRequest = async(requestId) => {
     try {
-      console.log("ye"+userId);
+      // console.log("ye"+userId);
       const response = await axios.put(`http://localhost:5001/api/v3/confirm-friend/${requestId}/${user}`); // Replace 'userId' with the actual ID of the logged-in user
       console.log(response.data.message); // Log the confirmation message
       // You can also update the state or perform other actions after confirming the friend request
@@ -65,6 +72,9 @@ const Navbar = ({ userId,isSidebarOpen, setIsSidebarOpen }) => {
     }
     console.log(`Request ${requestId} confirmed.`);
   };
+
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
 
   return (
     <AppBar position="static" style={{ background: "transparent", boxShadow: "none" }}>
@@ -80,11 +90,13 @@ const Navbar = ({ userId,isSidebarOpen, setIsSidebarOpen }) => {
               <Search />
             </IconButton>
           </Box>
+          
         </Box>
-
+      
         {/* Right Side */}
+        
         <Box display="flex" alignItems="center">
-          <IconButton onClick={() => console.log("Toggle mode")}>
+          <IconButton onClick={() => dispatch(setMode())}>
             {theme.palette.mode === "dark" ? (
               <DarkModeOutlined sx={{ fontSize: "25px" }} />
             ) : (
@@ -94,12 +106,13 @@ const Navbar = ({ userId,isSidebarOpen, setIsSidebarOpen }) => {
           <IconButton onClick={handleFriendRequestsClick}>
             <NotificationsOutlined sx={{ fontSize: "25px" }} />
           </IconButton>
-          <IconButton>
+          <IconButton onClick={handleClick}>
+            
             <SettingsOutlined sx={{ fontSize: "25px" }} />
           </IconButton>
         </Box>
       </Toolbar>
-
+       
       {/* Backdrop to blur the background */}
       {showFriendRequests && (
         <div
@@ -149,6 +162,7 @@ const Navbar = ({ userId,isSidebarOpen, setIsSidebarOpen }) => {
         </Box>
       )}
 
+      
       {/* Notification */}
       {showNotification && (
         <Box

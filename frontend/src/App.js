@@ -13,6 +13,9 @@ import Signup from "scenes/signup";
 import  Home  from "scenes/home";
 import  Friends  from "scenes/friends";
 import  Overview  from "scenes/overview";
+import  Bar  from "scenes/bar";
+import  Line  from "scenes/line";
+
 
 function App() {
   const mode = useSelector((state) => state.global.mode);    //material ui setup
@@ -23,14 +26,16 @@ function App() {
         <CssBaseline/>
         <Routes>
             <Route path="/signup" exact element={<Signup />} />
-		      <Route path="/login" exact element={<Login />} />
+		        <Route path="/login" exact element={<Login />} />
             <Route path="/" exact element={<Home />} />
            <Route element={<Layout/>}>
                 <Route path="/dashboard" exact element={<Dashboard />} />
                <Route path="/dashboard" exact element={<Dashboard />} />
-               <Route path="/transactions" element={<Transactions />} />     
+               <Route path="/transactions" element={<Transactions dash={{ is: '1'}}/>} />     
                <Route path="/friends" element={<Friends />} />  
-               <Route path="/overview" element={<Overview />} />             
+               <Route path="/overview" element={<Overview />} /> 
+               <Route path="/bar" element={<Bar />} /> 
+               <Route path="/line" element={<Line />} />             
            </Route>
         </Routes>
        </ThemeProvider>

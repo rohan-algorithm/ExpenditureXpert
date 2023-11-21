@@ -1,64 +1,85 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import FlexBetween from "component/FlexBetween";
 import Header from "component/Header";
-import {
-  DownloadOutlined,
-  Email,
-  PointOfSale,
-  PersonAdd,
-  Traffic,
-} from "@mui/icons-material";
+import { DownloadOutlined } from "@mui/icons-material";
 import {
   Box,
   Button,
   Typography,
   useTheme,
+  IconButton,
   useMediaQuery,
+   Dialog, DialogTitle, DialogContent, TextField,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 import BreakdownChart from "../../scenes/overview";
 import Expenses from "../../scenes/transactions";
-
-// import OverviewChart from "component/OverviewChart";
-import { useGetDashboardQuery } from "state/api";
-import Card from "component/Card";
+import axios from "axios";
+import EditIcon from "@mui/icons-material/Edit";
 
 const Dashboard = () => {
   const theme = useTheme();
   const isNonMediumScreens = useMediaQuery("(min-width: 1200px)");
-  const { data, isLoading } = useGetDashboardQuery();
+  const [balance, setBalance] = useState(null);
+  const user = sessionStorage.getItem("id");
+  // console.log(user);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5001/api/v4/balance/${user}`
+        );
+        setBalance(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-  const columns = [
-    {
-      field: "_id",
-      headerName: "ID",
-      flex: 1,
-    },
-    {
-      field: "userId",
-      headerName: "User ID",
-      flex: 1,
-    },
-    {
-      field: "createdAt",
-      headerName: "CreatedAt",
-      flex: 1,
-    },
-    {
-      field: "products",
-      headerName: "# of Products",
-      flex: 0.5,
-      sortable: false,
-      renderCell: (params) => params.value.length,
-    },
-    {
-      field: "cost",
-      headerName: "Cost",
-      flex: 1,
-      renderCell: (params) => `$${Number(params.value).toFixed(2)}`,
-    },
-  ];
+    const fetchDataAndSetInterval = async () => {
+      await fetchData();
+      const interval = setInterval(fetchData, 5000); // Fetch every 5 seconds
+      return () => clearInterval(interval);
+    };
 
+    const interval = fetchDataAndSetInterval();
+
+    return () => {
+      interval.then(clearInterval);
+    };
+  }, [user]);
+  const [open, setOpen] = useState(false);
+
+  const [newBudget, setNewBudget] = useState(0);
+  const [currentBudget, setCurrentBudget] = useState(0); // Set initial budget value here
+
+  // Function to handle opening and closing of the dialog
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleEditClick = async () => {
+    handleOpen();
+    // Fetch the current budget value from the backend here and set it to setCurrentBudget
+  };
+
+  const handleSave = async () => {
+    try {
+      // Call API endpoint to update the budget (replace 'your_api_endpoint' with your actual endpoint)
+      const response = await axios.put(`http://localhost:5001/api/v4/Updatebalance/${user}`, { budget: newBudget });
+
+      // Update state with the new budget value from the response
+      setCurrentBudget(response.data.budget);
+      handleClose();
+    } catch (error) {
+      console.error("Error updating budget:", error);
+      // Handle error here, show an error message, or perform any other necessary action
+    }
+  };
+
+  console.log(balance);
   return (
     <Box m="1.5rem 2.5rem">
       <FlexBetween>
@@ -90,93 +111,202 @@ const Dashboard = () => {
           "& > div": { gridColumn: isNonMediumScreens ? undefined : "span 12" },
         }}
       >
-        {/* ROW 1 */}
-        
-        <Box
-          gridColumn="span 8"
-          gridRow="span 2"
-          backgroundColor={theme.palette.background.alt}
-          p="1rem"
-          borderRadius="0.55rem"
-        >
-           {/* <Card/> */}
-          {/* <OverviewChart view="sales" isDashboard={true} /> */}
-        </Box>
-      
-        {/* <StatBox
-          title="Monthly Sales"
-          value={data && data.thisMonthStats.totalSales}
-          increase="+5%"
-          description="Since last month"
-          icon={
-            <PersonAdd
-              sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
-            />
-          }
-        />
-        <StatBox
-          title="Yearly Sales"
-          value={data && data.yearlySalesTotal}
-          increase="+43%"
-          description="Since last month"
-          icon={
-            <Traffic
-              sx={{ color: theme.palette.secondary[300], fontSize: "26px" }}
-            />
-          }
-        /> */}
-
         {/* ROW 2 */}
         <Box
-          gridColumn="span 8"
+          gridColumn="span 4"
+          gridRow="span 1"
+          backgroundColor={theme.palette.background.alt}
+          p="1.5rem"
+          borderRadius="0.55rem"
+          display="flex"
+          flexDirection="column"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Box display="flex" alignItems="center">
+            <Typography
+              variant="body1"
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                color: theme.palette.secondary[100],
+              }}
+            >
+              Balance
+            </Typography>
+            <Box ml={1} display="flex" alignItems="center">
+              {/* Your currency icon */}
+            </Box>
+            {/* Edit Budget Button */}
+            {/* <IconButton
+              onClick={handleEditBudget}
+              sx={{
+                backgroundColor: theme.palette.primary.main,
+                color: theme.palette.primary.contrastText,
+                "&:hover": {
+                  backgroundColor: theme.palette.primary.dark,
+                },
+              }}
+            >
+              <EditIcon />
+            </IconButton> */}
+          </Box>
+          <Typography
+            variant="body1"
+            style={{
+              fontSize: "2.5rem",
+              fontWeight: "bold",
+              color: theme.palette.secondary[100],
+            }}
+          >
+            {balance ? balance.budget : 0}
+          </Typography>
+        </Box>
+        <Box
+          gridColumn="span 4" // Update span to 4 for Balance, Amt Debit, Amt Credit
+          gridRow="span 1"
+          backgroundColor={theme.palette.background.alt}
+          p="1.5rem"
+          borderRadius="0.55rem"
+          display="flex"
+          flexDirection="column"
+          justifyContent="space-between"
+          alignItems="center" // Aligning label in center
+        >
+          <Box display="flex" alignItems="center">
+            <Typography
+              variant="body1"
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                color: theme.palette.secondary[100],
+              }}
+            >
+              Amount Lent
+            </Typography>{" "}
+            {/* Making the label bold */}
+            <Box ml={1} display="flex" alignItems="center">
+              {/* Replace 'YourIcon' with your currency icon */}
+            </Box>
+            <>
+      <IconButton onClick={handleEditClick}>
+        <EditIcon />
+      </IconButton>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Edit Budget</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="New Budget"
+            type="number"
+            value={newBudget}
+            onChange={(e) => setNewBudget(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <Button
+            variant="contained"
+            onClick={handleSave}
+            sx={{
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
+              "&:hover": {
+                backgroundColor: theme.palette.primary.dark,
+              },
+            }}
+          >
+            Save
+          </Button>
+        </DialogContent>
+      </Dialog>
+    </>
+          </Box>
+          
+          <Typography
+            variant="body1"
+            style={{
+              fontSize: "2.5rem",
+              fontWeight: "bold",
+              color: theme.palette.secondary[100],
+            }}
+          >
+            {balance ? balance.amountLent : 0}
+          </Typography>{" "}
+          {/* Adjust font size and weight */}
+        </Box>
+        <Box
+          gridColumn="span 4" // Update span to 4 for Balance, Amt Debit, Amt Credit
+          gridRow="span 1"
+          backgroundColor={theme.palette.background.alt}
+          p="1.5rem"
+          borderRadius="0.55rem"
+          display="flex"
+          flexDirection="column"
+          justifyContent="space-between"
+          alignItems="center" // Aligning label in center
+        >
+          <Box display="flex" alignItems="center">
+            <Typography
+              variant="body1"
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                color: theme.palette.secondary[100],
+              }}
+            >
+              Amount Owed
+            </Typography>{" "}
+            {/* Making the label bold */}
+            <Box ml={1} display="flex" alignItems="center">
+              {/* Replace 'YourIcon' with your currency icon */}
+            </Box>
+            {/* <IconButton
+              onClick={handleEditBudget}
+              sx={{
+                backgroundColor: theme.palette.primary.main,
+                color: theme.palette.primary.contrastText,
+                "&:hover": {
+                  backgroundColor: theme.palette.primary.dark,
+                },
+              }}
+            >
+              <EditIcon />
+            </IconButton> */}
+          </Box>
+          <Typography
+            variant="body1"
+            style={{
+              fontSize: "2.5rem",
+              fontWeight: "bold",
+              color: theme.palette.secondary[100],
+            }}
+          >
+            {balance ? balance.amountOwed : 0}
+          </Typography>{" "}
+          {/* Adjust font size and weight */}
+        </Box>
+
+        {/* ROW 3 */}
+        <Box
+          gridColumn="span 6" // Update span to 8 for Expenses
           gridRow="span 3"
           sx={{
             "& .MuiDataGrid-root": {
               border: "none",
               borderRadius: "5rem",
             },
-            "& .MuiDataGrid-cell": {
-              borderBottom: "none",
-            },
-            "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: theme.palette.background.alt,
-              color: theme.palette.secondary[100],
-              borderBottom: "none",
-            },
-            "& .MuiDataGrid-virtualScroller": {
-              backgroundColor: theme.palette.background.alt,
-            },
-            "& .MuiDataGrid-footerContainer": {
-              backgroundColor: theme.palette.background.alt,
-              color: theme.palette.secondary[100],
-              borderTop: "none",
-            },
-            "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-              color: `${theme.palette.secondary[200]} !important`,
-            },
+            // Add other styles for Expenses component if needed
           }}
         >
-          <Expenses/>
+          <Expenses dash={{ is: "0" }} />
         </Box>
         <Box
-          gridColumn="span 4"
+          gridColumn="span 6" // Update span to 4 for Sales By Category
           gridRow="span 3"
           backgroundColor={theme.palette.background.alt}
           p="1.5rem"
           borderRadius="0.55rem"
         >
-          <Typography variant="h6" sx={{ color: theme.palette.secondary[100] }}>
-            Sales By Category
-          </Typography>
-          <BreakdownChart isDashboard={true} />
-          <Typography
-            p="0 0.6rem"
-            fontSize="0.8rem"
-            sx={{ color: theme.palette.secondary[200] }}
-          >
-            Breakdown of real states and information via category for revenue
-            made for this year and total sales.
-          </Typography>
+          <BreakdownChart />
         </Box>
       </Box>
     </Box>
