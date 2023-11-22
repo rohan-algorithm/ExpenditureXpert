@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link } from "react-router-dom";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 const Register = () => {
     const [name, setName] = useState();
@@ -28,10 +29,11 @@ const Register = () => {
             console.log(error);
         }
     }
-
+   
 
     return (
-        <div>
+        <>
+            
             <div className="d-flex justify-content-center align-items-center text-center vh-100" style= {{backgroundImage : "linear-gradient(#00d5ff,#0095ff,rgba(93,0,255,.555))"}}>
                 <div className="bg-white p-3 rounded" style={{width : '40%'}}>
                     <h2 className='mb-3 text-primary'>Register</h2>
@@ -76,14 +78,24 @@ const Register = () => {
                             />
                         </div>
                         <button type="submit" className="btn btn-primary">Register</button>
+                        <GoogleOAuthProvider clientId="568513368114-833obe5hjo7c3et62ffal3nmt4n9aqom.apps.googleusercontent.com">
+                            <GoogleLogin
+                                onSuccess={credentialResponse => {
+                                    console.log(credentialResponse);
+                                }}
+                                onError={() => {
+                                    console.log('Login Failed');
+                                }}
+                                />;
+                        </GoogleOAuthProvider>;
                     </form>
 
                     <p className='container my-2'>Already have an account ?</p>
                     <Link to='/login' className="btn btn-secondary">Login</Link>
                 </div>
             </div>
-        </div>
-    )
+       </> 
+    );
 }
 
 export default Register;
