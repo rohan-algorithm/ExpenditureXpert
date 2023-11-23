@@ -11,7 +11,6 @@ import friends from "./routes/friends.js";
 import userInfo from "./routes/user.js";
 import Graphs from "./routes/pie.js";
 
-
 /* CONFIGURATION */
 dotenv.config();
 const app = express();

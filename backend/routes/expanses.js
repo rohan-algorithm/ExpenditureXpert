@@ -27,7 +27,6 @@ Router.post("/addExpanse", async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
     } catch (error) {
-        console.log(error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 });
@@ -48,7 +47,6 @@ Router.get("/getExpenses/:id", async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
     } catch (error) {
-        console.log(error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 });
@@ -71,7 +69,6 @@ Router.put("/updateExpense/:Id", async (req, res) => {
             return res.status(404).json({ message: "Expense not found" });
         }
     } catch (error) {
-        console.log(error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 });
@@ -97,7 +94,6 @@ Router.delete("/deleteExpense/:expanseId", async (req, res) => {
             return res.status(404).json({ message: "Expense not found" });
         }
     } catch (error) {
-        console.log(error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 });

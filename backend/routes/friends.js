@@ -106,10 +106,8 @@ router.get('/get-friends/:userId', async (req, res) => {
       }
      
       const availableRequests = user.availableRequests;
-      console.log(availableRequests);
       res.status(200).json(availableRequests);
     } catch (error) {
-      console.error(error);
       res.status(500).json({ message: 'Error fetching pending requests' });
     }
   });
