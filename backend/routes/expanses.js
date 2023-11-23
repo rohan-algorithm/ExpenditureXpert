@@ -15,11 +15,11 @@ Router.post("/addExpanse", async (req, res) => {
         if (existingUser) {
             const expanse = new Expanses({ name, amount, category,date,time, user: existingUser });
             await expanse.save();
-
+            ///hello pratik
             // Push expanse to user's expanses and save the user
             existingUser.expanses.push(expanse);
             existingUser.budget -= amount;
-
+            console.log(existingUser);
             await existingUser.save();
 
             return res.status(200).json({ expanse });
@@ -40,7 +40,7 @@ Router.get("/getExpenses/:id", async (req, res) => {
 
         // Find user by email
         const existingUser = await User.findById(id).populate('expanses');
-
+        console.log(existingUser);
         if (existingUser) {
             return res.status(200).json({ expenses: existingUser.expanses });
         } else {

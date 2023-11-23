@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-
+///hello pratik
 const Expanses = new mongoose.Schema({
     name:{
         type: String,
