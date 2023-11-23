@@ -15,11 +15,11 @@ Router.post("/addExpanse", async (req, res) => {
         if (existingUser) {
             const expanse = new Expanses({ name, amount, category,date,time, user: existingUser });
             await expanse.save();
-
+            ///hello pratik
             // Push expanse to user's expanses and save the user
             existingUser.expanses.push(expanse);
             existingUser.budget -= amount;
-
+            console.log(existingUser);
             await existingUser.save();
 
             return res.status(200).json({ expanse });
@@ -27,7 +27,6 @@ Router.post("/addExpanse", async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
     } catch (error) {
-        console.log(error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 });
@@ -41,14 +40,13 @@ Router.get("/getExpenses/:id", async (req, res) => {
 
         // Find user by email
         const existingUser = await User.findById(id).populate('expanses');
-
+        console.log(existingUser);
         if (existingUser) {
             return res.status(200).json({ expenses: existingUser.expanses });
         } else {
             return res.status(404).json({ message: "User not found" });
         }
     } catch (error) {
-        console.log(error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 });
@@ -71,7 +69,6 @@ Router.put("/updateExpense/:Id", async (req, res) => {
             return res.status(404).json({ message: "Expense not found" });
         }
     } catch (error) {
-        console.log(error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 });
@@ -97,7 +94,6 @@ Router.delete("/deleteExpense/:expanseId", async (req, res) => {
             return res.status(404).json({ message: "Expense not found" });
         }
     } catch (error) {
-        console.log(error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 });

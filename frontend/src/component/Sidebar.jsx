@@ -46,6 +46,11 @@ const navItems = [
     text: "Friends",
     icon: <People />,
   },
+  
+  {
+    text: "GroupList",
+    icon: <People />,
+  },
   {
     text: "Overview",
     icon: <PieChartOutlined />,
