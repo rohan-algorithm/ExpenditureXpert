@@ -15,7 +15,8 @@ import  Friends  from "scenes/friends";
 import  Overview  from "scenes/overview";
 import  Bar  from "scenes/bar";
 import  Line  from "scenes/line";
-
+import GroupList from "scenes/GroupList";
+import GroupInfo from "scenes/groupInfo";
 
 function App() {
   const mode = useSelector((state) => state.global.mode);    //material ui setup
@@ -35,7 +36,10 @@ function App() {
                <Route path="/friends" element={<Friends />} />  
                <Route path="/overview" element={<Overview />} /> 
                <Route path="/bar" element={<Bar />} /> 
-               <Route path="/line" element={<Line />} />             
+               <Route path="/line" element={<Line />} />
+               <Route path="/grouplist" element={<GroupList />} />
+               <Route path="/groupinfo/:groupId" element={<GroupInfo />} />      
+
            </Route>
         </Routes>
        </ThemeProvider>

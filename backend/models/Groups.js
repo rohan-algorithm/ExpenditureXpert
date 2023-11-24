@@ -11,6 +11,7 @@ const groupSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
       },
+      memberName: String,
       amountOwed: {
         type: Number,
         default: 0,

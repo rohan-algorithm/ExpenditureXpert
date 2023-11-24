@@ -32,14 +32,10 @@ const ExpenseTable = ({ dash }) => {
   const [totalPages, setTotalPages] = useState(1);
   const theme = useTheme();
 
-  const fetchUpdatedData = () => {
-    fetchData(); // Fetch updated data
-  };
-
   useEffect(() => {
-    const interval = setInterval(fetchUpdatedData, 500); // Fetch data every 5 seconds (adjust as needed)
-    return () => clearInterval(interval); // Clear interval on component unmount
-  }, []);
+    fetchData();
+  }, [currentPage]);
+
   const fetchData = async () => {
     try {
       const id = sessionStorage.getItem('id');

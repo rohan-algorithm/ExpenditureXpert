@@ -40,7 +40,7 @@ Router.get("/getExpenses/:id", async (req, res) => {
 
         // Find user by email
         const existingUser = await User.findById(id).populate('expanses');
-        console.log(existingUser);
+
         if (existingUser) {
             return res.status(200).json({ expenses: existingUser.expanses });
         } else {
