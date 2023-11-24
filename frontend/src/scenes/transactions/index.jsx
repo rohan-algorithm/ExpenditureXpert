@@ -151,9 +151,9 @@ const ExpenseTable = ({ dash }) => {
         </DialogActions>
       </Dialog>
       <TableContainer  component={Paper} style={{ border: '2px solid', borderColor: 'white'}}>
-        <Table style={{ backgroundColor: theme.palette.primary[500], color: theme.palette.primary.main }}>
+        <Table style={{ backgroundColor: theme.palette.primary[900], color: theme.palette.primary[900] }}>
           <TableHead>
-            <TableRow style={{ backgroundColor: theme.palette.primary[700], color: theme.palette.primary.contrastText }}>
+            <TableRow style={{ backgroundColor: theme.palette.primary[700], color: theme.palette.primary[900] }}>
               <TableCell>Expense name</TableCell>
               <TableCell>Amount</TableCell>
               <TableCell>Date</TableCell>
@@ -173,7 +173,7 @@ const ExpenseTable = ({ dash }) => {
               expenses.map((expense) => (
                 <TableRow key={expense._id}>
                   <TableCell>{expense.name}</TableCell>
-                  <TableCell>{expense.amount}</TableCell>
+                  <TableCell>₹ {expense.amount}</TableCell>
                   <TableCell>{new Date(expense.date).toLocaleDateString()}</TableCell>
                   <TableCell>{new Date(expense.time).toLocaleTimeString()}</TableCell>
                   <TableCell>{expense.category}</TableCell>

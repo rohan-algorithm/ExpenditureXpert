@@ -84,6 +84,10 @@ const userInfo = new mongoose.Schema({
         type: Number,
       },
     }],
+    goals:[{
+      type:mongoose.Types.ObjectId,
+      ref:'goals',
+    }],
     
 })
 

@@ -11,7 +11,7 @@ import friends from "./routes/friends.js";
 import userInfo from "./routes/user.js";
 import Graphs from "./routes/pie.js";
 import Groups from "./routes/groups.js";
-
+import Goals from "./routes/goals.js";
 /* CONFIGURATION */
 dotenv.config();
 const app = express();
@@ -33,6 +33,7 @@ app.use("/api/v3", friends);
 app.use("/api/v4", userInfo);
 app.use("/api/v5", Graphs);
 app.use("/api/v6", Groups);
+app.use("/api/v7", Goals);
 app.get('/',async(req,res)=>{
   //  res.send("hi");
   //  const data = await TransactionSchema.find({});

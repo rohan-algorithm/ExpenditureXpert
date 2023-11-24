@@ -9,7 +9,10 @@ import {
   useTheme,
   IconButton,
   useMediaQuery,
-   Dialog, DialogTitle, DialogContent, TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
 } from "@mui/material";
 import BreakdownChart from "../../scenes/overview";
 import Expenses from "../../scenes/transactions";
@@ -64,11 +67,18 @@ const Dashboard = () => {
     handleOpen();
     // Fetch the current budget value from the backend here and set it to setCurrentBudget
   };
+  const handleEditBudget = async () => {
+    handleOpen();
+    // Fetch the current budget value from the backend here and set it to setCurrentBudget
+  };
 
   const handleSave = async () => {
     try {
       // Call API endpoint to update the budget (replace 'your_api_endpoint' with your actual endpoint)
-      const response = await axios.put(`http://localhost:5001/api/v4/Updatebalance/${user}`, { budget: newBudget });
+      const response = await axios.put(
+        `http://localhost:5001/api/v4/Updatebalance/${user}`,
+        { budget: newBudget }
+      );
 
       // Update state with the new budget value from the response
       setCurrentBudget(response.data.budget);
@@ -79,7 +89,6 @@ const Dashboard = () => {
     }
   };
 
-  console.log(balance);
   return (
     <Box m="1.5rem 2.5rem">
       <FlexBetween>
@@ -138,7 +147,7 @@ const Dashboard = () => {
               {/* Your currency icon */}
             </Box>
             {/* Edit Budget Button */}
-            {/* <IconButton
+            <IconButton
               onClick={handleEditBudget}
               sx={{
                 backgroundColor: theme.palette.primary.main,
@@ -149,7 +158,7 @@ const Dashboard = () => {
               }}
             >
               <EditIcon />
-            </IconButton> */}
+            </IconButton>
           </Box>
           <Typography
             variant="body1"
@@ -159,7 +168,7 @@ const Dashboard = () => {
               color: theme.palette.secondary[100],
             }}
           >
-            {balance ? balance.budget : 0}
+             ₹ {balance ? balance.budget : 0}
           </Typography>
         </Box>
         <Box
@@ -188,39 +197,37 @@ const Dashboard = () => {
             <Box ml={1} display="flex" alignItems="center">
               {/* Replace 'YourIcon' with your currency icon */}
             </Box>
+           
+           
             <>
-      <IconButton onClick={handleEditClick}>
-        <EditIcon />
-      </IconButton>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Edit Budget</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="New Budget"
-            type="number"
-            value={newBudget}
-            onChange={(e) => setNewBudget(e.target.value)}
-            fullWidth
-            margin="normal"
-          />
-          <Button
-            variant="contained"
-            onClick={handleSave}
-            sx={{
-              backgroundColor: theme.palette.primary.main,
-              color: theme.palette.primary.contrastText,
-              "&:hover": {
-                backgroundColor: theme.palette.primary.dark,
-              },
-            }}
-          >
-            Save
-          </Button>
-        </DialogContent>
-      </Dialog>
-    </>
+              <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>Edit Budget</DialogTitle>
+                <DialogContent>
+                  <TextField
+                    label="New Budget"
+                    type="number"
+                    value={newBudget}
+                    onChange={(e) => setNewBudget(e.target.value)}
+                    fullWidth
+                    margin="normal"
+                  />
+                  <Button
+                    variant="contained"
+                    onClick={handleSave}
+                    sx={{
+                      backgroundColor: theme.palette.primary.main,
+                      color: theme.palette.primary.contrastText,
+                      "&:hover": {
+                        backgroundColor: theme.palette.primary.dark,
+                      },
+                    }}
+                  >
+                    Save
+                  </Button>
+                </DialogContent>
+              </Dialog>
+            </>
           </Box>
-          
           <Typography
             variant="body1"
             style={{
@@ -229,7 +236,7 @@ const Dashboard = () => {
               color: theme.palette.secondary[100],
             }}
           >
-            {balance ? balance.amountLent : 0}
+           ₹ {balance ? balance.amountLent : 0}
           </Typography>{" "}
           {/* Adjust font size and weight */}
         </Box>
@@ -259,18 +266,7 @@ const Dashboard = () => {
             <Box ml={1} display="flex" alignItems="center">
               {/* Replace 'YourIcon' with your currency icon */}
             </Box>
-            {/* <IconButton
-              onClick={handleEditBudget}
-              sx={{
-                backgroundColor: theme.palette.primary.main,
-                color: theme.palette.primary.contrastText,
-                "&:hover": {
-                  backgroundColor: theme.palette.primary.dark,
-                },
-              }}
-            >
-              <EditIcon />
-            </IconButton> */}
+            
           </Box>
           <Typography
             variant="body1"
@@ -280,7 +276,7 @@ const Dashboard = () => {
               color: theme.palette.secondary[100],
             }}
           >
-            {balance ? balance.amountOwed : 0}
+            ₹ {balance ? balance.amountOwed : 0}
           </Typography>{" "}
           {/* Adjust font size and weight */}
         </Box>

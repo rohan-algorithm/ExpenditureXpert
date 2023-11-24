@@ -2,33 +2,46 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import {
   LightModeOutlined,
+  NotificationsOutlined,
   DarkModeOutlined,
   Menu as MenuIcon,
   Search,
   SettingsOutlined,
-  NotificationsOutlined,
+  ArrowDropDownOutlined,
 } from "@mui/icons-material";
 import {
   AppBar,
-  IconButton,
-  Toolbar,
-  Box,
-  Typography,
-  InputBase,
   Button,
+  Box,
   Popover,
+  Typography,
+  IconButton,
+  InputBase,
+  Toolbar,
   List,
   ListItem,
+  Menu,
+  MenuItem,
+  useTheme,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { setMode } from "state";
+import { logout, setMode } from "state";
 import profileImage from "assets/profileImage.png";
+import FlexBetween from "component/FlexBetween";
+import { useNavigate } from "react-router-dom";
 
-const Navbar = ({ userId, isSidebarOpen, setIsSidebarOpen }) => {
+
+const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
   const dispatch = useDispatch();
   const [friendRequests, setFriendRequests] = useState([]);
   const [groupRequests, setGroupRequests] = useState([]);
   const [anchorElNotification, setAnchorElNotification] = useState(null);
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const isOpen = Boolean(anchorEl);
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
   const uid= sessionStorage.getItem("id");
   useEffect(() => {
     const fetchFriendRequests = async () => {
@@ -47,7 +60,7 @@ const Navbar = ({ userId, isSidebarOpen, setIsSidebarOpen }) => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [userId]);
+  }, [uid]);
 
   //Group Req
   useEffect(() => {
@@ -68,7 +81,7 @@ const Navbar = ({ userId, isSidebarOpen, setIsSidebarOpen }) => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [userId]);
+  }, [user]);
   const handleNotificationClick = (event) => {
     setAnchorElNotification(event.currentTarget);
   };
@@ -90,8 +103,7 @@ const Navbar = ({ userId, isSidebarOpen, setIsSidebarOpen }) => {
   };
    const handleConfirmRequest1 = async(requestId) => {
     try {
-      // console.log("ye"+userId);
-      console.log(uid,requestId);
+
       const response = await axios.post(`http://localhost:5001/api/v6/acceptGroupRequest`, {
       
           userId: uid,
@@ -104,23 +116,38 @@ const Navbar = ({ userId, isSidebarOpen, setIsSidebarOpen }) => {
     }
     console.log(`Request ${requestId} confirmed.`);
   };
+  const handleLogOut = async()=>{
+    dispatch(logout());
+    sessionStorage.clear();
+    navigate(`/login`);
+  }
 
   return (
-    <AppBar position="static" style={{ background: "transparent", boxShadow: "none" }}>
-      <Toolbar style={{ justifyContent: "space-between" }}>
-        {/* Left Side */}
-        <Box display="flex">
-          <IconButton onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-            <MenuIcon />
-          </IconButton>
-          <Box bgcolor="#f5f5f5" borderRadius="9px" display="flex" alignItems="center" px="10px">
-            <InputBase placeholder="Search..." />
-            <IconButton>
-              <Search />
-            </IconButton>
-          </Box>
-        </Box>
-      
+    <AppBar
+    sx={{
+      position: "static",
+      background:"none",
+      boxShadoq: "node",
+    }}
+  >
+    <Toolbar sx={{ justifyContent: "space-between"}}>
+     {/* Left Side*/}
+      <FlexBetween>
+      <IconButton onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+              <MenuIcon/>
+         </IconButton>
+           <FlexBetween
+             backgroundColor={theme.palette.background.alt}
+             borderRadius="9px"
+             gap="3rem"
+             p="0.1rem 1.5rem"
+            >
+         <InputBase placeholder="Search..." />
+         <IconButton>
+           <Search />
+         </IconButton>
+       </FlexBetween>
+     </FlexBetween>
         {/* Right Side */}
         <Box display="flex" alignItems="center">
           <IconButton onClick={() => dispatch(setMode())}>
@@ -129,9 +156,57 @@ const Navbar = ({ userId, isSidebarOpen, setIsSidebarOpen }) => {
           <IconButton onClick={handleNotificationClick}>
             <NotificationsOutlined sx={{ fontSize: "25px" }} />
           </IconButton>
-          <IconButton>
-            <SettingsOutlined sx={{ fontSize: "25px" }} />
-          </IconButton>
+          
+          <FlexBetween>
+            <Button
+              onClick={handleClick}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                textTransform: "none",
+                gap: "1rem",
+              }}
+            >
+              <Box
+                component="img"
+                alt="profile"
+                src={profileImage}
+                height="32px"
+                width="32px"
+                borderRadius="50%"
+                marginTop="18px"
+                // padding="2px"
+                sx={{ objectFit: "cover" }}
+              />
+              <Box textAlign="left">
+                <Typography
+                  fontWeight="bold"
+                  fontSize="0.85rem"
+                  sx={{ color: theme.palette.secondary[100] }}
+                >
+                 { user.name}
+                </Typography>
+                <Typography
+                  fontSize="0.75rem"
+                  sx={{ color: theme.palette.secondary[200] }}
+                >
+                 { user.email}
+                </Typography>
+              </Box>
+              <ArrowDropDownOutlined
+                sx={{ color: theme.palette.secondary[300], fontSize: "25px" }}
+              />
+            </Button>
+            <Menu
+              anchorEl={anchorEl}
+              open={isOpen}
+              onClose={handleClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            >
+              <MenuItem onClick={handleLogOut}>Log Out</MenuItem>
+            </Menu>
+          </FlexBetween>
         </Box>
 
         {/* Notification Popover */}

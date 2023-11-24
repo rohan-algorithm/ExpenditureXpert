@@ -23,6 +23,7 @@ import {
   Timeline,
   PieChartOutlined,
 } from "@mui/icons-material";
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FlexBetween from "./FlexBetween";
@@ -58,6 +59,10 @@ const navItems = [
   {
     text: "Bar",
     icon: <BarChartIcon />,
+  },
+  {
+    text: "Goals",
+    icon: <EmojiEventsIcon />,
   },
   
 ];
@@ -172,7 +177,8 @@ const Sidebar = ({
                 src={profileImage}
                 height="40px"
                 width="40px"
-                borderRadius="50%"
+                marginTop={4}
+                borderRadius="40%"
                 sx={{ objectFit: "cover" }}
               />
               <Box textAlign="left">
@@ -187,15 +193,10 @@ const Sidebar = ({
                   fontSize="0.8rem"
                   sx={{ color: theme.palette.secondary[200] }}
                 >
-                  {user.budget}
+                  {user.email}
                 </Typography>
               </Box>
-              <SettingsOutlined
-                sx={{
-                  color: theme.palette.secondary[300],
-                  fontSize: "25px ",
-                }}
-              />
+              
             </FlexBetween>
           </Box>
         </Drawer>

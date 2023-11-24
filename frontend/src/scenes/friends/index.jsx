@@ -125,8 +125,8 @@ const FriendList = () => {
                 <TableRow key={friend._id}>
                   <TableCell>{friend.name}</TableCell>
                   <TableCell>{friend.email}</TableCell>
-                  <TableCell>{friend.amountOwed }</TableCell>
-                  <TableCell>{friend.amountLent}</TableCell>
+                  <TableCell>₹ {friend.amountOwed }</TableCell>
+                  <TableCell>₹ {friend.amountLent}</TableCell>
                 </TableRow>
               ))
             )}

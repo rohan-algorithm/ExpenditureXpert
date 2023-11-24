@@ -104,28 +104,35 @@ const GroupInfo = () => {
           <Button onClick={handleAddFriend} variant="contained" color="primary">Add</Button>
         </DialogActions>
       </Dialog>
-      <h2>{group ? `Group: ${group.name}` : 'Group Information'}</h2>
+      <h2>{group ? `Group: ${group.name.toUpperCase()}` : 'Group Information'}</h2>
       {loading ? (
         <CircularProgress />
       ) : group ? (
-        <TableContainer component={Paper}>
-          <Table>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <TableContainer component={Paper}sx={{
+          width: "80%",
+          // // maxWidth: 360,
+          // bgcolor: theme.palette.primary[700],
+          // borderRadius: "8px",
+        }}>
+          <Table >
             <TableHead>
-              <TableRow style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText }}>
+              <TableRow style={{ backgroundColor: theme.palette.primary[700], color: theme.palette.primary.contrastText }}>
                 <TableCell>Member Name</TableCell>
                 <TableCell>Split Amount</TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
+            <TableBody style={{ backgroundColor: theme.palette.primary[500], color: theme.palette.primary.contrastText }}>
               {group.members.map((member) => (
                 <TableRow key={member.userId}>
                   <TableCell>{member.memberName}</TableCell>
-                  <TableCell>{member.amountOwed}</TableCell>
+                  <TableCell>₹ {member.amountOwed}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
+        </div>
       ) : (
         <p>No data available for this group.</p>
       )}

@@ -50,30 +50,55 @@ router.get('/balance/:userId', async (req, res) => {
   }
 });
 
-router.put('Updatebalance/:userId', async(req, res) => {
-  const userId = req.params.userId;
-  const { budget } = req.body;
+router.put('/Updatebalance/:userId', async(req, res) => {
+  const { userId } = req.params;
+  const {budget} = req.body;
+  console.log(userId);
+  try {
+    
+    const user = await User.findById(userId);
+    // console.log(user);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }else
 
-  const user = await User.findById(userId);
-
-  if (!user) {
-    return res.status(404).json({ message: 'User not found' });
+     user.budget =budget ;
+     console.log(user.budget);
+     user.save();
+    return res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching user details', error: error.message });
   }
-  const { amountOwed} = user; // Destructure user object to get required fields
-  amountOwed = budget;
-    const userDetails = {
-      budget,
-      amountOwed,
-      amountLent,
-    };
-
-  User[userId].amountLent = budget; // Update the budget for the user
-
-  // Simulate some processing time (replace with database update or other logic)
-  setTimeout(() => {
-    res.json({ success: true, message: 'Budget updated successfully' });
-  }, 1000); // Delayed response for simulation purposes
+  
+  
+ 
 });
+
+
+// router.put('Updatebalance/:userId', async(req, res) => {
+//   const userId = req.params.userId;
+//   const { budget } = req.body;
+
+//   const user = await User.findById(userId);
+
+//   if (!user) {
+//     return res.status(404).json({ message: 'User not found' });
+//   }
+//   const { amountOwed} = user; // Destructure user object to get required fields
+//   amountOwed = budget;
+//     const userDetails = {
+//       budget,
+//       amountOwed,
+//       amountLent,
+//     };
+
+//   User[userId].amountLent = budget; // Update the budget for the user
+
+//   // Simulate some processing time (replace with database update or other logic)
+//   setTimeout(() => {
+//     res.json({ success: true, message: 'Budget updated successfully' });
+//   }, 1000); // Delayed response for simulation purposes
+// });
 
 
 

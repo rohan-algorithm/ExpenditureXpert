@@ -7,11 +7,13 @@ import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { Typography, useTheme } from "@mui/material";
 import { login } from "../../state/index"; // Import login action from globalSlice
+import { themeSettings } from "theme";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const theme  = useTheme();
   const dispatch = useDispatch(); // Get dispatch function
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -71,8 +73,7 @@ const Login = () => {
       <div
         className="d-flex justify-content-center align-items-center text-center vh-100"
         style={{
-          backgroundImage:
-            "linear-gradient(#00d5ff,#0095ff,rgba(93,0,255,.555))",
+          backgroundImage: theme.palette.secondary[200]
         }}
       >
         <div className="bg-white p-3 rounded" style={{ width: "40%" }}>
