@@ -11,8 +11,6 @@ router.post('/add-friend/:userId', async (req, res) => {
       const friendId = await User.findOne({ email: friendMail });
       const user = await User.findById(userId);
       const friend = await User.findById(friendId);
-      console.log(user);
-      console.log(friend);
 
       if (!user || !friend) {
         return res.status(404).json({ message: 'User or friend not found' });
@@ -106,10 +104,8 @@ router.get('/get-friends/:userId', async (req, res) => {
       }
      
       const availableRequests = user.availableRequests;
-      console.log(availableRequests);
       res.status(200).json(availableRequests);
     } catch (error) {
-      console.error(error);
       res.status(500).json({ message: 'Error fetching pending requests' });
     }
   });

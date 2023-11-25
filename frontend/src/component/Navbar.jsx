@@ -2,186 +2,277 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import {
   LightModeOutlined,
+  NotificationsOutlined,
   DarkModeOutlined,
   Menu as MenuIcon,
   Search,
   SettingsOutlined,
-  NotificationsOutlined,
   ArrowDropDownOutlined,
-  AttachMoney, // Add the currency icon
 } from "@mui/icons-material";
 import {
   AppBar,
+  Button,
+  Box,
+  Popover,
+  Typography,
   IconButton,
-  Menu,
-  MenuItem,
   InputBase,
   Toolbar,
-  Box,
-  Typography,
-  Button,
+  List,
+  ListItem,
+  Menu,
+  MenuItem,
   useTheme,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { setMode } from "state";
-import FlexBetween from "../component/FlexBetween";
+import { logout, setMode } from "state";
 import profileImage from "assets/profileImage.png";
+import FlexBetween from "component/FlexBetween";
+import { useNavigate } from "react-router-dom";
 
-const Navbar = ({ userId, isSidebarOpen, setIsSidebarOpen }) => {
-  const theme = useTheme();
+
+const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
   const dispatch = useDispatch();
-  const [showFriendRequests, setShowFriendRequests] = useState(false);
   const [friendRequests, setFriendRequests] = useState([]);
-  const [showNotification, setShowNotification] = useState(false);
+  const [groupRequests, setGroupRequests] = useState([]);
+  const [anchorElNotification, setAnchorElNotification] = useState(null);
+  const theme = useTheme();
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const isOpen = Boolean(anchorEl);
-   
-  const user = sessionStorage.getItem('id');
-
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+  const uid= sessionStorage.getItem("id");
   useEffect(() => {
-    const fetchPendingRequests = async () => {
+    const fetchFriendRequests = async () => {
       try {
-        const response = await axios.get(`http://localhost:5001/api/v3/available-requests/${user}`);
+        const response = await axios.get(`http://localhost:5001/api/v3/available-requests/${uid}`);
+
+        // console.log(response.data);
         setFriendRequests(response.data);
       } catch (error) {
-        console.error('Error fetching pending requests:', error);
+        console.error('Error fetching friend requests:', error);
       }
     };
 
     const interval = setInterval(() => {
-      fetchPendingRequests();
+      fetchFriendRequests();
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [uid]);
 
-  const handleFriendRequestsClick = () => {
-    setShowFriendRequests(!showFriendRequests);
-    setShowNotification(false);
+  //Group Req
+  useEffect(() => {
+    const fetchGroupRequests = async () => {
+      try {
+        
+        const response = await axios.get(`http://localhost:5001/api/v6/pendingGroupsReq/${uid}`);
+
+        console.log(response.data);
+        setGroupRequests(response.data);
+      } catch (error) {
+        console.error('Error fetching friend requests:', error);
+      }
+    };
+
+    const interval = setInterval(() => {
+      fetchGroupRequests();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [user]);
+  const handleNotificationClick = (event) => {
+    setAnchorElNotification(event.currentTarget);
+  };
+
+  const handleNotificationClose = () => {
+    setAnchorElNotification(null);
   };
 
   const handleConfirmRequest = async(requestId) => {
     try {
       // console.log("ye"+userId);
-      const response = await axios.put(`http://localhost:5001/api/v3/confirm-friend/${requestId}/${user}`); // Replace 'userId' with the actual ID of the logged-in user
+      const response = await axios.put(`http://localhost:5001/api/v3/confirm-friend/${requestId}/${uid}`); // Replace 'userId' with the actual ID of the logged-in user
       console.log(response.data.message); // Log the confirmation message
-      // You can also update the state or perform other actions after confirming the friend request
     } catch (error) {
       console.error('Error confirming friend request:', error);
       // Handle error states or show a message to the user that the confirmation failed
     }
     console.log(`Request ${requestId} confirmed.`);
   };
+   const handleConfirmRequest1 = async(requestId) => {
+    try {
 
-  const handleClick = (event) => setAnchorEl(event.currentTarget);
-  const handleClose = () => setAnchorEl(null);
+      const response = await axios.post(`http://localhost:5001/api/v6/acceptGroupRequest`, {
+      
+          userId: uid,
+          groupId: requestId,
+      }); // Replace 'userId' with the actual ID of the logged-in user
+      console.log(response.data.message); // Log the confirmation message
+    } catch (error) {
+      console.error('Error confirming friend request:', error);
+      // Handle error states or show a message to the user that the confirmation failed
+    }
+    console.log(`Request ${requestId} confirmed.`);
+  };
+  const handleLogOut = async()=>{
+    dispatch(logout());
+    sessionStorage.clear();
+    navigate(`/login`);
+  }
 
   return (
-    <AppBar position="static" style={{ background: "transparent", boxShadow: "none" }}>
-      <Toolbar style={{ justifyContent: "space-between" }}>
-        {/* Left Side */}
-        <Box display="flex">
-          <IconButton onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-            <MenuIcon />
-          </IconButton>
-          <Box bgcolor={theme.palette.background.alt} borderRadius="9px" display="flex" alignItems="center" px="10px">
-            <InputBase placeholder="Search..." />
-            <IconButton>
-              <Search />
-            </IconButton>
-          </Box>
-          
-        </Box>
-      
+    <AppBar
+    sx={{
+      position: "static",
+      background:"none",
+      boxShadoq: "node",
+    }}
+  >
+    <Toolbar sx={{ justifyContent: "space-between"}}>
+     {/* Left Side*/}
+      <FlexBetween>
+      <IconButton onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+              <MenuIcon/>
+         </IconButton>
+           <FlexBetween
+             backgroundColor={theme.palette.background.alt}
+             borderRadius="9px"
+             gap="3rem"
+             p="0.1rem 1.5rem"
+            >
+         <InputBase placeholder="Search..." />
+         <IconButton>
+           <Search />
+         </IconButton>
+       </FlexBetween>
+     </FlexBetween>
         {/* Right Side */}
-        
         <Box display="flex" alignItems="center">
           <IconButton onClick={() => dispatch(setMode())}>
-            {theme.palette.mode === "dark" ? (
-              <DarkModeOutlined sx={{ fontSize: "25px" }} />
-            ) : (
-              <LightModeOutlined sx={{ fontSize: "25px" }} />
-            )}
+            <DarkModeOutlined sx={{ fontSize: "25px" }} />
           </IconButton>
-          <IconButton onClick={handleFriendRequestsClick}>
+          <IconButton onClick={handleNotificationClick}>
             <NotificationsOutlined sx={{ fontSize: "25px" }} />
           </IconButton>
-          <IconButton onClick={handleClick}>
-            
-            <SettingsOutlined sx={{ fontSize: "25px" }} />
-          </IconButton>
+          
+          <FlexBetween>
+            <Button
+              onClick={handleClick}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                textTransform: "none",
+                gap: "1rem",
+              }}
+            >
+              <Box
+                component="img"
+                alt="profile"
+                src={profileImage}
+                height="32px"
+                width="32px"
+                borderRadius="50%"
+                marginTop="18px"
+                // padding="2px"
+                sx={{ objectFit: "cover" }}
+              />
+              <Box textAlign="left">
+                <Typography
+                  fontWeight="bold"
+                  fontSize="0.85rem"
+                  sx={{ color: theme.palette.secondary[100] }}
+                >
+                 { user.name}
+                </Typography>
+                <Typography
+                  fontSize="0.75rem"
+                  sx={{ color: theme.palette.secondary[200] }}
+                >
+                 { user.email}
+                </Typography>
+              </Box>
+              <ArrowDropDownOutlined
+                sx={{ color: theme.palette.secondary[300], fontSize: "25px" }}
+              />
+            </Button>
+            <Menu
+              anchorEl={anchorEl}
+              open={isOpen}
+              onClose={handleClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            >
+              <MenuItem onClick={handleLogOut}>Log Out</MenuItem>
+            </Menu>
+          </FlexBetween>
         </Box>
+
+        {/* Notification Popover */}
+        <Popover
+          open={Boolean(anchorElNotification)}
+          anchorEl={anchorElNotification}
+          onClose={handleNotificationClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+        >
+          <Box
+            sx={{
+              width: '300px',
+              maxHeight: '300px',
+              overflowY: 'auto',
+            }}
+          >
+            <List>
+              {friendRequests.map((request, index) => (
+                <ListItem key={index} >
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <Typography variant="body5" sx={{ mr: 2 }}>{request.name}</Typography>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={() => handleConfirmRequest(request._id)}
+                    >
+                      Confirm
+                    </Button>
+                  </Box>
+                </ListItem>
+              ))}
+            </List>
+            <List>
+              {groupRequests.map((request, index) => (
+                <ListItem key={index} >
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <Typography variant="body5" sx={{ mr: 2 }}>{request.name}</Typography>
+                    <Typography variant="body5" sx={{ mr: 2 }}>{request.amt}</Typography>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={() => handleConfirmRequest1(request.groupId)}
+                    >
+                      Confirm
+                    </Button>
+                  </Box>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        </Popover>
       </Toolbar>
-       
-      {/* Backdrop to blur the background */}
-      {showFriendRequests && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            backdropFilter: "blur(5px)",
-            zIndex: 999,
-          }}
-          onClick={handleFriendRequestsClick} // Close the popup when backdrop is clicked
-        />
-      )}
-
-      {/* Friend Requests Display */}
-      {showFriendRequests && (
-        <Box
-          sx={{
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            zIndex: 1000,
-            backgroundColor: theme.palette.background.paper,
-            padding: "10px",
-            borderRadius: "5px",
-            maxWidth: "300px",
-          }}
-        >
-          <Typography variant="h6" style={{ marginBottom: "10px" }}>Friend Requests</Typography>
-          {friendRequests.map((request, index) => (
-            <Box key={index} style={{ marginBottom: "5px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <Typography variant="body1" sx={{ mr: 2 }}>{request.name}</Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                size="small"
-                onClick={() => handleConfirmRequest(request._id)}
-              >
-                Confirm
-              </Button>
-            </Box>
-          ))}
-        </Box>
-      )}
-
-      
-      {/* Notification */}
-      {showNotification && (
-        <Box
-          sx={{
-            position: "fixed",
-            top: "20px",
-            right: "20px",
-            zIndex: 1000,
-            backgroundColor: theme.palette.success.main,
-            color: theme.palette.success.contrastText,
-            padding: "10px",
-            borderRadius: "5px",
-          }}
-        >
-          New Friend Requests
-        </Box>
-      )}
     </AppBar>
-  )
-}
+  );
+};
 
 export default Navbar;
+
+
+

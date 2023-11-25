@@ -11,7 +11,7 @@ const userInfo = new mongoose.Schema({
     },
     password:{
         type: String,
-        required: true,
+        // required: true,
     },
     expanses:[{
         type:mongoose.Types.ObjectId,
@@ -57,6 +57,38 @@ const userInfo = new mongoose.Schema({
       type: Number,
       default: 0,
     },
+    friends: [{
+      friendId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'user', // Reference to other users (friends)
+      },
+      amountOwed: {
+          type: Number,
+          default: 0,
+      },
+      amountLent: {
+          type: Number,
+          default: 0,
+      },
+    }],
+    groups:[{
+      type:mongoose.Types.ObjectId,
+      ref:'groups',
+    }],
+    pendingGroupRequests: [{
+      groupId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'groups',
+      },
+      amt: {
+        type: Number,
+      },
+    }],
+    goals:[{
+      type:mongoose.Types.ObjectId,
+      ref:'goals',
+    }],
+    
 })
 
 const userModel = mongoose.model('user', userInfo);

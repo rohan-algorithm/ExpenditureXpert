@@ -44,4 +44,20 @@ router.post("/signin", async (req, res) => {
 	  return res.status(500).json({ message: "Internal Server Error" });
 	}
   });
+
+
+  // Logout route
+  router.get("/logout", async (req, res) => {
+	try {
+	  req.session.destroy((err) => {
+		if (err) {
+		  return res.status(500).json({ message: "Logout failed" });
+		}
+		res.status(200).json({ message: "Logout successful" });
+	  });
+	} catch (err) {
+	  return res.status(500).json({ message: "Internal Server Error" });
+	}
+  });
+  
 export default router;

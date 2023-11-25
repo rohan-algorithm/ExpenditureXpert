@@ -7,21 +7,20 @@ import globalReducer from "state";
 import { Provider } from "react-redux";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { api } from "state/api";
+import storeAndPersistor from './state/store';
 
-const store = configureStore({  // redux toolkit boilerplate
-  reducer: {
-    global: globalReducer,
-    [api.reducerPath]: api.reducer,
-  },
-  middleware: (getDefault) => getDefault().concat(api.middleware),
-});
-setupListeners(store.dispatch);
+// const { store, persistor } = storeAndPersistor;
+import { PersistGate } from 'redux-persist/integration/react';
+
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-   <Provider store={store}>
+   <Provider store={storeAndPersistor.store}>
+      <PersistGate loading={null} persistor={storeAndPersistor.persistor}>
       <App />
+      </PersistGate>
     </Provider>
   </React.StrictMode>
 );

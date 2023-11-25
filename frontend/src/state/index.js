@@ -1,9 +1,11 @@
+// globalSlice.js
+
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   mode: "dark",
   userId: "",
-  isLoggedIn:false,
+  isLoggedIn: false,
 };
 
 export const globalSlice = createSlice({
@@ -23,6 +25,7 @@ export const globalSlice = createSlice({
     },
   },
 });
-export const { setMode , login, logout} = globalSlice.actions;
+
+export const { setMode, login, logout } = globalSlice.actions;
 
 export default globalSlice.reducer;
