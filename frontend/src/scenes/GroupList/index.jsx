@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 import axios from "axios";
 import {
   useTheme,
@@ -17,16 +16,15 @@ import {
   ListItemText,
   ListItemAvatar,
   Avatar,
-  Box, // Import Box component for layout
+  Box,
 } from "@mui/material";
 
 const CreateGroupPopup = ({ open, handleClose, handleCreateGroup }) => {
   const [groupName, setGroupName] = useState("");
 
   const handleCreate = () => {
-    // Call a function passed down from the parent component to handle group creation
     handleCreateGroup(groupName);
-    setGroupName(""); // Reset the input after creating the group
+    setGroupName("");
     handleClose();
   };
 
@@ -34,9 +32,7 @@ const CreateGroupPopup = ({ open, handleClose, handleCreateGroup }) => {
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Create a Group</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          Enter a name for your new group.
-        </DialogContentText>
+        <DialogContentText>Enter a name for your new group.</DialogContentText>
         <TextField
           autoFocus
           margin="dense"
@@ -58,7 +54,6 @@ const CreateGroupPopup = ({ open, handleClose, handleCreateGroup }) => {
   );
 };
 
-
 const GroupList = () => {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,22 +70,18 @@ const GroupList = () => {
     setOpenCreateGroup(false);
   };
 
-  const handleCreateGroup = async(groupName) => {
-    // Perform group creation logic here (e.g., API call, state update)
+  const handleCreateGroup = async (groupName) => {
     try {
-      const response = await axios.post(`http://localhost:5001/api/v6/createGroup`, {
+      await axios.post(`http://localhost:5001/api/v6/createGroup`, {
         userId: uid,
-        name:groupName
+        name: groupName,
       });
-      // setGroup(response.data.friends);
-      // setOpenDialog(false);
-      // setSelectedFriendId('');
-      // setAmountToTake('');
+      fetchGroups(); // Refresh the group list after creating a new group
     } catch (error) {
-      console.error('Error Creating a Group', error);
+      console.error("Error Creating a Group", error);
     }
-    console.log(`Creating group with name: ${groupName}`);
   };
+
   useEffect(() => {
     fetchGroups();
   }, []);
@@ -110,69 +101,62 @@ const GroupList = () => {
   };
 
   const handleItemClick = (groupId) => {
-    console.log(`Clicked group with ID: ${groupId}`);
     navigate(`/groupinfo/${groupId}`, { state: { groupId } });
-
   };
 
   return (
-    <Box>
-    
-     <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <Box width="30%">
-        <h2>My Groups</h2>
-        <Button variant="contained" onClick={handleCreateGroupClick}>
-        Create Group
-      </Button>
-      
-      <CreateGroupPopup
-        open={openCreateGroup}
-        handleClose={handleCloseCreateGroup}
-        handleCreateGroup={handleCreateGroup}
-      />
-         <Box marginTop={2}>
-         {/* Space */}
-        </Box> 
+    <Box className="flex justify-center items-center min-h-screen" style={{ backgroundColor: theme.palette.background.default }}>
+      <Box
+        className="w-full max-w-md p-4 rounded-lg shadow-md"
+        style={{ backgroundColor: theme.palette.background.alt }}
+      >
+        <h2 className="text-2xl font-bold mb-4 text-center" style={{ color: theme.palette.text.primary }}>
+          My Groups
+        </h2>
+        <Button
+          variant="contained"
+          onClick={handleCreateGroupClick}
+          className="w-full mb-4"
+          style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText }}
+        >
+          Create Group
+        </Button>
+
+        <CreateGroupPopup
+          open={openCreateGroup}
+          handleClose={handleCloseCreateGroup}
+          handleCreateGroup={handleCreateGroup}
+        />
+
         {loading ? (
-          <CircularProgress />
-        ) : (
-          <Box display="flex" justifyContent="center">
-            <List
-              sx={{
-                width: "100%",
-                // maxWidth: 360,
-                bgcolor: theme.palette.primary[700],
-                borderRadius: "8px",
-              }}
-            >
-              {groups.map((group) => (
-                <ListItem
-                  key={group._id}
-                  onClick={() => handleItemClick(group._id)}
-                  // sx={{ marginBottom: 2 }}
-                >
-                  <ListItemAvatar>
-                    <Avatar>{/* Replace with appropriate icon */}</Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={group.name.toUpperCase()}
-                    // secondary={`Members: ${group.members.join(", ")}`}
-                  />
-                </ListItem >
-                
-              ))}
-            </List>
+          <Box className="flex justify-center">
+            <CircularProgress style={{ color: theme.palette.primary.main }} />
           </Box>
+        ) : (
+          <List>
+            {groups.map((group) => (
+              <ListItem
+                key={group._id}
+                onClick={() => handleItemClick(group._id)}
+                className="cursor-pointer hover:bg-gray-200 rounded-lg mb-2"
+                style={{ backgroundColor: theme.palette.background.default }}
+              >
+                <ListItemAvatar>
+                  <Avatar src={`https://ui-avatars.com/api/?name=${group.name}`} />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={group.name.toUpperCase()}
+                  secondary={`Members: ${group.members.map(member => member.memberName).join(", ")}`}
+                  primaryTypographyProps={{ style: { color: theme.palette.text.primary } }}
+                  secondaryTypographyProps={{ style: { color: theme.palette.text.secondary } }}
+                />
+              </ListItem>
+            ))}
+          </List>
         )}
       </Box>
-      </div>
     </Box>
   );
 };
 
 export default GroupList;
-
-
-
-
-

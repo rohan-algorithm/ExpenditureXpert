@@ -34,6 +34,7 @@ function LinearProgressWithLabel(props) {
 const GoalForm = () => {
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(false);
+  const uid = sessionStorage.getItem("id");
   const [newGoal, setNewGoal] = useState({
     goalName: '',
     amount: 0,
@@ -41,7 +42,7 @@ const GoalForm = () => {
     description: '',
     progress: 0,
   });
-
+  
   useEffect(() => {
     fetchData();
   }, []);
@@ -49,7 +50,7 @@ const GoalForm = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5001/api/v7/getGoals/65607a557be1cb81d7cbf98a`);
+      const response = await axios.get(`http://localhost:5001/api/v7/getGoals/${uid}`);
       setGoals(response.data.goals); // Assuming the response contains goals
       setLoading(false);
     } catch (error) {
@@ -65,9 +66,7 @@ const GoalForm = () => {
 
   const addGoal = async () => {
     try {
-      // Implement your logic to add a new goal using axios post request
-      // Example: await axios.post('YOUR_ADD_GOAL_ENDPOINT', newGoal);
-      // After adding, fetch updated goals list
+      await axios.post('http://localhost:5001/api/v7/createGoal', { ...newGoal, uid });
       await fetchData();
       setNewGoal({
         goalName: '',
@@ -85,10 +84,44 @@ const GoalForm = () => {
     <Container>
       <h2>Goal Tracker</h2>
 
-      <Paper elevation={3}>
+      <Paper elevation={3} sx={{ padding: 2 }}>
         <form>
-          {/* Input fields for goal details */}
-          <Button variant="contained" onClick={addGoal}>
+          <TextField
+            label="Goal Name"
+            name="goalName"
+            value={newGoal.goalName}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Amount"
+            name="amount"
+            type="number"
+            value={newGoal.amount}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Target Date"
+            name="targetDate"
+            type="date"
+            value={newGoal.targetDate}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            label="Description"
+            name="description"
+            value={newGoal.description}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+          <Button variant="contained" onClick={addGoal} sx={{ marginTop: 2 }}>
             Add Goal
           </Button>
         </form>
@@ -100,7 +133,7 @@ const GoalForm = () => {
       ) : (
         <Grid container spacing={3}>
           {goals.map((goal) => (
-            <Grid item key={goal.id} xs={8} sm={6} md={3} lg={3}>
+            <Grid item key={goal.id} xs={12} sm={6} md={4} lg={3}>
               <Card>
                 <CardContent>
                   <Typography variant="h6">{goal.goalName}</Typography>

@@ -2,58 +2,91 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { MenuItem, Select } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import Header  from 'component/Header';
+import Header from 'component/Header';
+
 const MonthlyExpenses = () => {
-  const [monthlyData, setMonthlyData] = useState([]);
+  const [data, setData] = useState([]);
   const [viewType, setViewType] = useState('monthly');
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [viewType]);
 
   const fetchData = async () => {
     try {
       const userId = sessionStorage.getItem('id');
       const response = await axios.get(`http://localhost:5001/api/v5/${viewType}/${userId}`);
-      setMonthlyData(response.data);
+      setData(response.data);
     } catch (error) {
       console.error('Error fetching expenses:', error);
     }
   };
 
-  const handleViewChange = async (type) => {
+  const handleViewChange = (type) => {
     setViewType(type);
-    try {
-      const userId = sessionStorage.getItem('id');
-      const response = await axios.get(`http://localhost:5001/api/v5/${type}/${userId}`);
-      setMonthlyData(response.data);
-    } catch (error) {
-      console.error('Error fetching expenses:', error);
-    }
   };
 
   const formatDataForChart = () => {
     const chartData = [];
-    const sortedMonths = Object.keys(monthlyData).sort();
-
-    sortedMonths.forEach((month) => {
-      const categories = monthlyData[month];
-      const monthlyTotal = Object.values(categories).reduce((acc, amount) => acc + amount, 0);
-      const monthName = new Date(month).toLocaleString('default', { month: 'long' });
-
-      chartData.push({
-        month: monthName,
-        total: monthlyTotal,
-        ...categories,
+  
+    if (viewType === 'yearly') {
+      const yearlyData = {};
+  
+      // Aggregate data by year
+      Object.keys(data).forEach((key) => {
+        const year = new Date(key).getFullYear();
+        if (!yearlyData[year]) {
+          yearlyData[year] = {};
+        }
+  
+        const categories = data[key];
+        Object.keys(categories).forEach((category) => {
+          if (!yearlyData[year][category]) {
+            yearlyData[year][category] = 0;
+          }
+          yearlyData[year][category] += categories[category];
+        });
       });
-    });
-
+  
+      // Format the aggregated data for the chart
+      Object.keys(yearlyData).forEach((year) => {
+        const categories = yearlyData[year];
+        const total = Object.values(categories).reduce((acc, amount) => acc + amount, 0);
+  
+        chartData.push({
+          label: year,
+          total,
+          ...categories,
+        });
+      });
+    } else {
+      const sortedKeys = Object.keys(data).sort();
+  
+      sortedKeys.forEach((key) => {
+        const categories = data[key];
+        const total = Object.values(categories).reduce((acc, amount) => acc + amount, 0);
+        let label;
+  
+        if (viewType === 'weekly') {
+          label = `Week ${key}`;
+        } else if (viewType === 'monthly') {
+          label = new Date(key).toLocaleString('default', { month: 'long' });
+        }
+  
+        chartData.push({
+          label,
+          total,
+          ...categories,
+        });
+      });
+    }
+  
     return chartData;
   };
 
   return (
     <div style={{ width: '100%', height: 400 }}>
-       <Header title="Expenses" subtitle="Compare Your Expenses Week,Month,Year Wise" />
+      <Header title="Expenses" subtitle="Compare Your Expenses Week, Month, Year Wise" />
       <Select
         value={viewType}
         onChange={(e) => handleViewChange(e.target.value)}
@@ -65,7 +98,7 @@ const MonthlyExpenses = () => {
       <ResponsiveContainer>
         <BarChart data={formatDataForChart()} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" tick={{ fill: 'white' }} />
+          <XAxis dataKey="label" tick={{ fill: 'white' }} />
           <YAxis tick={{ fill: 'white' }} />
           <Tooltip />
           <Legend />

@@ -1,10 +1,60 @@
 import express from 'express';
-import User from '../models/User.js'; // Assuming this is your User model
-import Groups from '../models/Groups.js'; // Assuming this is your User model
+import mongoose from 'mongoose';
+import User from '../models/User.js';
+import Expense from '../models/Expanses.js';
 
 const router = express.Router();
 
-// Route to get user details by ID
+// Helper function to get the first and last day of a month
+const getMonthRange = (year, month) => {
+  const startDate = new Date(year, month, 1);
+  const endDate = new Date(year, month + 1, 0);
+  return { startDate, endDate };
+};
+
+// Route to get dashboard data 
+router.get('/dashboard/:user', async (req, res) => {
+  const userId = req.params.user;
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+  const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+  const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+  try {
+    // Get this month's expenses
+    const { startDate: thisMonthStart, endDate: thisMonthEnd } = getMonthRange(currentYear, currentMonth);
+    console.log(`This Month Start: ${thisMonthStart}, End: ${thisMonthEnd}`);
+    const thisMonthExpenses = await Expense.aggregate([
+      { $match: { 'user': new mongoose.Types.ObjectId(userId), date: { $gte: thisMonthStart, $lte: thisMonthEnd } } },
+      { $group: { _id: null, total: { $sum: '$amount' } } },
+    ]);
+    // console.log(`This Month Expenses: ${JSON.stringify(thisMonthExpenses)}`);
+
+    // Get last month's expenses
+    const { startDate: lastMonthStart, endDate: lastMonthEnd } = getMonthRange(lastMonthYear, lastMonth);
+    // console.log(`Last Month Start: ${lastMonthStart}, End: ${lastMonthEnd}`);
+    const lastMonthExpenses = await Expense.aggregate([
+      { $match: { 'user': new mongoose.Types.ObjectId(userId), date: { $gte: lastMonthStart, $lte: lastMonthEnd } } },
+      { $group: { _id: null, total: { $sum: '$amount' } } },
+    ]);
+    // console.log(`Last Month Expenses: ${JSON.stringify(lastMonthExpenses)}`);
+
+    // Get savings (assuming savings is stored in the budget field)
+    const user = await User.findById(userId);
+
+    res.json({
+      thisMonthExpense: thisMonthExpenses[0] ? thisMonthExpenses[0].total : 0,
+      lastMonthExpense: lastMonthExpenses[0] ? lastMonthExpenses[0].total : 0,
+      savings: user ? user.budget : 0,
+    });
+  } catch (error) {
+    // console.error('Error fetching dashboard data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 router.get('/user/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
@@ -27,6 +77,7 @@ router.get('/user/:userId', async (req, res) => {
     res.status(500).json({ message: 'Error fetching user details', error: error.message });
   }
 });
+
 router.get('/balance/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
@@ -36,7 +87,7 @@ router.get('/balance/:userId', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const { budget, amountOwed, amountLent} = user; // Destructure user object to get required fields
+    const { budget, amountOwed, amountLent } = user; // Destructure user object to get required fields
 
     const userDetails = {
       budget,
@@ -50,57 +101,24 @@ router.get('/balance/:userId', async (req, res) => {
   }
 });
 
-router.put('/Updatebalance/:userId', async(req, res) => {
+router.put('/Updatebalance/:userId', async (req, res) => {
   const { userId } = req.params;
-  const {budget} = req.body;
-  console.log(userId);
+  const { budget } = req.body;
+
   try {
-    
     const user = await User.findById(userId);
-    // console.log(user);
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
-    }else
+    }
 
-     user.budget =budget ;
-     console.log(user.budget);
-     user.save();
+    user.budget = budget;
+    await user.save();
+
     return res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching user details', error: error.message });
+    res.status(500).json({ message: 'Error updating user budget', error: error.message });
   }
-  
-  
- 
 });
-
-
-// router.put('Updatebalance/:userId', async(req, res) => {
-//   const userId = req.params.userId;
-//   const { budget } = req.body;
-
-//   const user = await User.findById(userId);
-
-//   if (!user) {
-//     return res.status(404).json({ message: 'User not found' });
-//   }
-//   const { amountOwed} = user; // Destructure user object to get required fields
-//   amountOwed = budget;
-//     const userDetails = {
-//       budget,
-//       amountOwed,
-//       amountLent,
-//     };
-
-//   User[userId].amountLent = budget; // Update the budget for the user
-
-//   // Simulate some processing time (replace with database update or other logic)
-//   setTimeout(() => {
-//     res.json({ success: true, message: 'Budget updated successfully' });
-//   }, 1000); // Delayed response for simulation purposes
-// });
-
-
-
 
 export default router;

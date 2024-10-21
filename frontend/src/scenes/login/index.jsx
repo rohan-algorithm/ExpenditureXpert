@@ -1,131 +1,227 @@
-import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useDispatch } from "react-redux"; // Import useDispatch
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  useTheme,
+  Paper,
+  CssBaseline,
+  FormControl,
+  FormLabel,
+  Stack,
+  Divider,
+} from "@mui/material";
+import { useDispatch } from "react-redux";
+import { styled } from "@mui/material/styles";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-import { jwtDecode } from "jwt-decode";
-import { Typography, useTheme } from "@mui/material";
+import jwtDecode from "jwt-decode";
 import { login } from "../../state/index"; // Import login action from globalSlice
-import { themeSettings } from "theme";
 
-const Login = () => {
+const Card = styled(Paper)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignSelf: 'center',
+  width: '100%',
+  padding: theme.spacing(4),
+  gap: theme.spacing(2),
+  margin: 'auto',
+  [theme.breakpoints.up('sm')]: {
+    maxWidth: '450px',
+  },
+  boxShadow:
+    'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
+}));
+
+const AuthContainer = styled(Stack)(({ theme }) => ({
+  padding: 20,
+  marginTop: '10vh',
+  '&::before': {
+    content: '""',
+    display: 'block',
+    position: 'absolute',
+    zIndex: -1,
+    inset: 0,
+    backgroundImage: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+    filter: 'blur(10px)',
+  },
+}));
+
+const Auth = () => {
+  const [isLogin, setIsLogin] = useState(true);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
-  const theme  = useTheme();
-  const dispatch = useDispatch(); // Get dispatch function
+  const theme = useTheme();
+  const dispatch = useDispatch();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (!isLogin && password !== confirmPassword) {
+      toast.error("Passwords do not match!");
+      return;
+    }
+
     try {
-      const response = await axios.post("http://localhost:5001/api/v1/signin", {
+      const endpoint = isLogin ? "signin" : "signup";
+      console.log(`Submitting to ${endpoint} with email: ${email}, password: ${password}, and name: ${name}`);
+      const response = await axios.post(`http://localhost:5001/api/v1/${endpoint}`, {
+        name: !isLogin ? name : undefined, // Only send name if signing up
         email,
         password,
       });
-      if (response.status === 200) {
-        sessionStorage.setItem("id", response.data.others._id); // Session Storage UserID Store
-        dispatch(login({ userId: response.data.others._id }));
-        alert("Login successful!");
+      console.log(response);
+
+      if (response.status === 200 || response.status === 201) {
+        console.log(response);
+        sessionStorage.setItem("id", response.data.user._id);
+        dispatch(login({ userId: response.data.user._id }));
+        toast.success(`${isLogin ? "Login" : "Registration"} successful!`);
+        console.log("Navigating to /dashboard");
         navigate("/dashboard");
       } else {
-        alert("Incorrect email or password! Please try again.");
+        toast.error(`${isLogin ? "Login" : "Registration"} failed! Please try again.`);
       }
     } catch (error) {
+      toast.error("An error occurred. Please try again.");
       console.log(error);
     }
   };
-  const handleSubmit1 = async (event) => {
-
-    try {
-      const response = await axios.post("http://localhost:5001/api/v1/signin", {
-        email,
-        password,
-      });
-      if (response.status === 200) {
-        sessionStorage.setItem("id", response.data.others._id); // Session Storage UserID Store
-        dispatch(login({ userId: response.data.others._id }));
-        alert("Login successful!");
-        navigate("/dashboard");
-      } else {
-        alert("Incorrect email or password! Please try again.");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const handleGoogleLoginSuccess = (credentialResponse) => {
-    const decoded = jwtDecode(credentialResponse.credential);
-    console.log(decoded);
-    // Extract user information from the Google OAuth response
-
-    // Set the state variables with Google user information
-    if (decoded) {
-    //   setName(decoded.name);
-      setEmail(decoded.email);
-    }
-    handleSubmit1();
-  };
-
 
   return (
-    <div>
-      <div
-        className="d-flex justify-content-center align-items-center text-center vh-100"
-        style={{
-          backgroundImage: theme.palette.secondary[200]
-        }}
-      >
-        <div className="bg-white p-3 rounded" style={{ width: "40%" }}>
-          <h2 className="mb-3 text-primary">Login</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3 text-start">
-              <label htmlFor="exampleInputEmail1" className="form-label">
-                <strong>Email Id</strong>
-              </label>
-              <input
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+      sx={{
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      <CssBaseline enableColorScheme />
+      <AuthContainer direction="column" justifyContent="space-between">
+        <Card variant="outlined">
+          <Typography
+            component="h1"
+            variant="h4"
+            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
+          >
+            {isLogin ? "Login" : "Register"}
+          </Typography>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100%',
+              gap: 2,
+            }}
+          >
+            {!isLogin && (
+              <FormControl>
+                <FormLabel htmlFor="name">Name</FormLabel>
+                <TextField
+                  id="name"
+                  type="text"
+                  name="name"
+                  placeholder="Your Name"
+                  autoComplete="name"
+                  autoFocus
+                  required
+                  fullWidth
+                  variant="outlined"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                />
+              </FormControl>
+            )}
+            <FormControl>
+              <FormLabel htmlFor="email">Email</FormLabel>
+              <TextField
+                id="email"
                 type="email"
-                placeholder="Enter Email"
-                className="form-control"
-                id="exampleInputEmail1"
+                name="email"
+                placeholder="your@email.com"
+                autoComplete="email"
+                autoFocus
+                required
+                fullWidth
+                variant="outlined"
+                value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                required
               />
-            </div>
-            <div className="mb-3 text-start">
-              <label htmlFor="exampleInputPassword1" className="form-label">
-                <strong>Password</strong>
-              </label>
-              <input
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="password">Password</FormLabel>
+              <TextField
+                name="password"
+                placeholder="••••••"
                 type="password"
-                placeholder="Enter Password"
-                className="form-control"
-                id="exampleInputPassword1"
-                onChange={(event) => setPassword(event.target.value)}
+                id="password"
+                autoComplete="current-password"
+                autoFocus
                 required
+                fullWidth
+                variant="outlined"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
               />
-            </div>
-            <button type="submit" className="btn btn-primary">
-              Login
-            </button>
-            <GoogleOAuthProvider clientId="568513368114-833obe5hjo7c3et62ffal3nmt4n9aqom.apps.googleusercontent.com">
-              <GoogleLogin
-                onSuccess={handleGoogleLoginSuccess}
-                onError={() => {
-                  console.log("Login Failed");
-                }}
-              />
-            </GoogleOAuthProvider>
-          </form>
-          {/* TO add ' appostopee */}
-          <p className="container my-2">Don&apos;t have an account?</p>
-          <Link to="/signup" className="btn btn-secondary">
-            Register
-          </Link>
-        </div>
-      </div>
-    </div>
+            </FormControl>
+            {!isLogin && (
+              <FormControl>
+                <FormLabel htmlFor="confirmPassword">Confirm Password</FormLabel>
+                <TextField
+                  name="confirmPassword"
+                  placeholder="••••••"
+                  type="password"
+                  id="confirmPassword"
+                  autoComplete="new-password"
+                  autoFocus
+                  required
+                  fullWidth
+                  variant="outlined"
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                />
+              </FormControl>
+            )}
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              sx={{ marginTop: 2 }}
+            >
+              {isLogin ? "Login" : "Register"}
+            </Button>
+            
+            <Typography sx={{ textAlign: 'center', mt: 2 }}>
+              {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+              <span
+                onClick={() => setIsLogin(!isLogin)}
+                style={{ cursor: "pointer", color: theme.palette.primary.main }}
+              >
+                {isLogin ? "Register" : "Login"}
+              </span>
+            </Typography>
+          </Box>
+        </Card>
+      </AuthContainer>
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+    </Box>
   );
 };
 
-export default Login;
+export default Auth;

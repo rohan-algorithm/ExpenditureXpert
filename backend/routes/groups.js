@@ -27,7 +27,7 @@ router.post('/createGroup', async (req, res) => {
 
 
 router.post('/sendGroupInvitation', async (req, res) => {
-  const { userId, invitedUserId, groupId, amt } = req.body;
+  const { userId, invitedUserId, groupId } = req.body;
 
   try {
     const user = await User.findById(userId);
@@ -76,7 +76,7 @@ router.post('/acceptGroupRequest', async (req, res) => {
     // if (!group) {
     //   return res.status(404).json({ message: 'Group not found' });
     // }
-    console.log("ye"+user, group );
+    // console.log("ye"+user, group );
 
     const foundObject = user.pendingGroupRequests.find(item => item.groupId && item.groupId.toString() === groupId);
     if(!foundObject) return res.status(404).json({ message: 'Req not found' });
@@ -96,7 +96,53 @@ router.post('/acceptGroupRequest', async (req, res) => {
   }
 });
 
+router.post('/addTransaction', async (req, res) => {
+  const { groupId, payerId, payerName, amountPaid, selectedFriends, customAmounts } = req.body;
 
+  try {
+    // Find the group by ID
+    const group = await Groups.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ error: 'Group not found' });
+    }
+
+    // Update the payer's amount
+    const payer = group.members.find(member => member.userId.toString() === payerId);
+    if (payer) {
+      payer.amount += parseFloat(amountPaid);
+    }
+
+    // Update the selected friends' amounts
+    selectedFriends.forEach(friendId => {
+      const friend = group.members.find(member => member.userId.toString() === friendId);
+      if (friend) {
+        if (customAmounts === null) {
+          const amount = parseFloat(amountPaid) / selectedFriends.length;
+          friend.amount -= amount;
+        } else {
+          const amount = parseFloat(customAmounts[friendId]);
+          friend.amount -= amount;
+        }
+      }
+    });
+
+    // Pushing the transaction to the group's history
+    group.history.push({
+      payerId,
+      memberName: payerName,
+      amountPaid: parseFloat(amountPaid),
+    
+    });
+    group.balance += parseFloat(amountPaid);
+
+    // Save the updated group
+    await group.save();
+
+    res.status(200).send({ message: 'Transaction added successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error adding transaction' });
+  }
+});
 router.get("/getExpenses/:id", async (req, res) => {
   try {
       const { id } = req.params;

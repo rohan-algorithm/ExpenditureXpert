@@ -13,46 +13,34 @@ import {
   Button,
   TextField,
   Box,
+  Container,
 } from '@mui/material';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Header from 'component/Header';
 
 const FriendList = () => {
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const theme = useTheme();
 
   useEffect(() => {
     fetchFriends();
-  }, [currentPage]);
+  }, []);
 
   const fetchFriends = async () => {
     try {
       const id = sessionStorage.getItem('id');
-      const response = await axios.get(`http://localhost:5001/api/v3/get-friends/${id}`, {
-        params: {
-          page: currentPage,
-          limit: 20,
-        },
-      });
-      console.log(response.data.friends);
+      const response = await axios.get(`http://localhost:5001/api/v3/get-friends/${id}`);
       setFriends(response.data.friends);
-      setTotalPages(Math.ceil(response.data.totalFriends / 20));
       setLoading(false);
     } catch (error) {
       console.error('Error fetching friends:', error);
       setLoading(false);
+      toast.error('Error fetching friends');
     }
   };
 
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
-  };
-
-  const handlePrevPage = () => {
-    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
-  };
   const [newFriendEmail, setNewFriendEmail] = useState('');
   const [addingFriend, setAddingFriend] = useState(false);
 
@@ -60,57 +48,49 @@ const FriendList = () => {
     try {
       setAddingFriend(true);
       const id = sessionStorage.getItem('id');
-      await axios.post(`http://localhost:5001/api/v3/add-friend/${id}`, { email: newFriendEmail});
+      await axios.post(`http://localhost:5001/api/v3/add-friend/${id}`, { email: newFriendEmail });
       setNewFriendEmail('');
-      // Refetch friends data or update state to display the newly added friend
       fetchFriends();
+      toast.success('Friend added successfully');
     } catch (error) {
       console.error('Error adding friend:', error);
+      toast.error('Error adding friend');
     } finally {
       setAddingFriend(false);
     }
   };
 
-
   return (
-    <>
+    <Container maxWidth="lg">
       <Header title="Friends" subtitle="Entire list of Friends" />
-      {/* Form for adding a friend */}
-      <Box diisplay="flex" alignItems="center" justifyContent="center" height="10vh">
+      <ToastContainer />
+      <Box display="flex" alignItems="center" justifyContent="center" className="mt-4 mb-4">
         <TextField
           label="Friend's Email"
           value={newFriendEmail}
           onChange={(e) => setNewFriendEmail(e.target.value)}
-          sx={{ mr: 5 }}
+          variant="outlined"
+          className="mr-4"
+          sx={{ marginRight: 2 }} // Add margin to the right
         />
         <Button
           onClick={handleAddFriend}
           disabled={addingFriend || newFriendEmail.trim() === ''}
-          sx={{
-            backgroundColor: '#1976D2',
-            color: 'white',
-            '&:hover': {
-              backgroundColor: '#115293',
-            },
-            '&:disabled': {
-              backgroundColor: '#CCCCCC',
-              color: 'rgba(255, 255, 255, 0.7)',
-              cursor: 'not-allowed',
-            },
-          }}
+          variant="contained"
+          color="primary"
         >
           Add Friend
         </Button>
       </Box>
 
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} className="shadow-lg">
         <Table>
-        <TableHead>
-            <TableRow style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText }}>
-              <TableCell>Friend Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Debit Amount</TableCell>
-              <TableCell>Credit Amount</TableCell>
+          <TableHead>
+            <TableRow style={{ backgroundColor: theme.palette.primary.main }}>
+              <TableCell style={{ color: theme.palette.primary.contrastText }}>Friend Name</TableCell>
+              <TableCell style={{ color: theme.palette.primary.contrastText }}>Email</TableCell>
+              <TableCell style={{ color: theme.palette.primary.contrastText }}>Debit Amount</TableCell>
+              <TableCell style={{ color: theme.palette.primary.contrastText }}>Credit Amount</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -125,7 +105,7 @@ const FriendList = () => {
                 <TableRow key={friend._id}>
                   <TableCell>{friend.name}</TableCell>
                   <TableCell>{friend.email}</TableCell>
-                  <TableCell>₹ {friend.amountOwed }</TableCell>
+                  <TableCell>₹ {friend.amountOwed}</TableCell>
                   <TableCell>₹ {friend.amountLent}</TableCell>
                 </TableRow>
               ))
@@ -133,15 +113,7 @@ const FriendList = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <div>
-        <Button onClick={handlePrevPage} disabled={currentPage === 1}>
-          Previous Page
-        </Button>
-        <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
-          Next Page
-        </Button>
-      </div>
-    </>
+    </Container>
   );
 };
 

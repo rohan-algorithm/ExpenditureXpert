@@ -1,12 +1,11 @@
 import mongoose from 'mongoose';
-///hello pratik
 const Expanses = new mongoose.Schema({
     name:{
         type: String,
         required: true,
     },
     amount:{
-        type: String,
+        type: Number,
         required: true,
     },
     category:{
@@ -14,7 +13,7 @@ const Expanses = new mongoose.Schema({
         required: true,
     },
     date:{
-        type: String,
+        type: Date,
         required: true,
     },
     time:{
