@@ -66,47 +66,47 @@ const Auth = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const dispatch = useDispatch();
-
+  const DOMAIN = process.env.REACT_APP_DOMAIN;
   const handleSubmit = async (event) => {
-  const DOMAIN = process.env.REACT_APP_DOMAIN;  
-  // console.log("DD"+DOMAIN);
-
+    
     event.preventDefault();
-
+  
     if (!isLogin && password !== confirmPassword) {
       toast.error("Passwords do not match!");
       return;
     }
-
+  
     try {
       const endpoint = isLogin ? "signin" : "signup";
-
+  
       console.log(`Submitting to ${endpoint} with email: ${email}, password: ${password}, and name: ${name}`);
       const response = await axios.post(`${DOMAIN}/api/v1/${endpoint}`, {
-        name: !isLogin ? name : undefined, // Only send name if signing up
+        name: !isLogin ? name : undefined, 
         email,
         password,
       });
-      console.log(response);
-      console.log("Full Response:", response);
-    console.log("Response Data:", response.data);
+  
 
-
-    const user = response.data?.newUser; // Access `newUser` from the response
-    if (user && user._id) {
-      sessionStorage.setItem("id", user._id); // Store user ID in session storage
-      dispatch(login({ userId: user._id })); // Update global state
-      toast.success(`${isLogin ? "Login" : "Registration"} successful!`);
-      navigate("/dashboard"); // Navigate to dashboard
-    } else {
-      toast.error("Unexpected response structure.");
-      console.error("Invalid response structure:", response.data);
-    }
+      // console.log("Full Response:", response);
+      // console.log("Response Data:", response.data);
+  
+      const user = isLogin ? response.data?.user : response.data?.newUser; 
+  
+      if (user && user._id) {
+        sessionStorage.setItem("id", user._id); 
+        dispatch(login({ userId: user._id }));
+        toast.success(`${isLogin ? "Login" : "Registration"} successful!`);
+        navigate("/dashboard"); 
+      } else {
+        toast.error("Unexpected response structure.");
+        console.error("Invalid response structure:", response.data);
+      }
     } catch (error) {
       toast.error("An error occurred. Please try again.");
       console.log(error);
     }
   };
+  
 
   return (
     <Box
