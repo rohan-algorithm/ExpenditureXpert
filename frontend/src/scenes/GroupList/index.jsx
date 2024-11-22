@@ -61,7 +61,7 @@ const GroupList = () => {
   const theme = useTheme();
   const uid = sessionStorage.getItem("id");
   const [openCreateGroup, setOpenCreateGroup] = useState(false);
-
+  const DOMAIN = process.env.REACT_APP_DOMAIN;
   const handleCreateGroupClick = () => {
     setOpenCreateGroup(true);
   };
@@ -72,7 +72,7 @@ const GroupList = () => {
 
   const handleCreateGroup = async (groupName) => {
     try {
-      await axios.post(`http://localhost:5001/api/v6/createGroup`, {
+      await axios.post(`${DOMAIN}/api/v6/createGroup`, {
         userId: uid,
         name: groupName,
       });
@@ -90,7 +90,7 @@ const GroupList = () => {
     try {
       const id = sessionStorage.getItem("id");
       const response = await axios.get(
-        `http://localhost:5001/api/v6/getExpenses/${id}`
+        `${DOMAIN}/api/v6/getExpenses/${id}`
       );
       setGroups(response.data.groups);
       setLoading(false);

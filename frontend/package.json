@@ -28,6 +28,7 @@
     "bootstrap": "^5.3.2",
     "chart.js": "^4.4.0",
     "date-fns": "^2.30.0",
+    "dotenv": "^16.4.5",
     "jwt-decode": "^4.0.0",
     "mdb-react-ui-kit": "^7.0.0",
     "react": "^18.2.0",
@@ -48,7 +49,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "testX": "react-scripts test",
+    "test": "ava \"app/**/*.test.js\" --verbose",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -68,5 +70,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "ava": "^6.2.0"
   }
 }

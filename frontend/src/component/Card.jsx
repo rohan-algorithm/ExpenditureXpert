@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Card, CardContent, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 const RowOfAmounts = () => {
+  const DOMAIN = process.env.REACT_APP_DOMAIN;; 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [data, setData] = useState({ budget: 0, amountOwed: 0, amountLent: 0 });
@@ -10,7 +11,7 @@ const RowOfAmounts = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5001/api/v4/balance/${id}`);
+        const response = await axios.get(`${DOMAIN}/api/v4/balance/${id}`);
         setData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);

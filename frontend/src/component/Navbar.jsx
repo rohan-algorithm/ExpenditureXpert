@@ -43,10 +43,10 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
   const uid = sessionStorage.getItem("id");
-
+  const DOMAIN = process.env.REACT_APP_DOMAIN;
   const fetchFriendRequests = async () => {
     try {
-      const response = await axios.get(`http://localhost:5001/api/v3/available-requests/${uid}`);
+      const response = await axios.get(`${DOMAIN}/api/v3/available-requests/${uid}`);
       setFriendRequests(response.data);
     } catch (error) {
       console.error('Error fetching friend requests:', error);
@@ -55,7 +55,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
 
   const fetchGroupRequests = async () => {
     try {
-      const response = await axios.get(`http://localhost:5001/api/v6/pendingGroupsReq/${uid}`);
+      const response = await axios.get(`${DOMAIN}/api/v6/pendingGroupsReq/${uid}`);
       setGroupRequests(response.data);
     } catch (error) {
       console.error('Error fetching group requests:', error);
@@ -77,7 +77,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
 
   const handleConfirmRequest = async (requestId) => {
     try {
-      const response = await axios.put(`http://localhost:5001/api/v3/confirm-friend/${requestId}/${uid}`);
+      const response = await axios.put(`${DOMAIN}/api/v3/confirm-friend/${requestId}/${uid}`);
       console.log(response.data.message);
       fetchFriendRequests();
     } catch (error) {
@@ -87,7 +87,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
 
   const handleConfirmRequest1 = async (requestId) => {
     try {
-      const response = await axios.post(`http://localhost:5001/api/v6/acceptGroupRequest`, {
+      const response = await axios.post(`${DOMAIN}/api/v6/acceptGroupRequest`, {
         userId: uid,
         groupId: requestId,
       });

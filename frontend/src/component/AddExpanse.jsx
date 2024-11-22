@@ -61,6 +61,8 @@ const AddExpensePopup = () => {
   };
 
   const handleAddExpense = (e) => {
+    const DOMAIN = process.env.REACT_APP_DOMAIN;
+    
     e.preventDefault();
   
   // Convert 'amount' to a number type if it's supposed to be a number
@@ -74,7 +76,7 @@ const AddExpensePopup = () => {
   }
   
 
-    axios.post('http://localhost:5001/api/v2/addExpanse', newExpense)
+    axios.post(`${DOMAIN}/api/v2/addExpanse`, newExpense)
     .then(response => {
       console.log('Data sent to the server:', response.data);
       // Perform any necessary actions upon successful data submission

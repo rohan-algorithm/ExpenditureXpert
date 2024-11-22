@@ -13,11 +13,13 @@ const Register = () => {
   const [password, setPassword] = useState();
   const navigate = useNavigate();
   const theme = useTheme();
+  const DOMAIN = process.env.REACT_APP_DOMAIN;
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:5001/api/v1/signup", {
+      const response = await axios.post(`${DOMAIN}/api/v1/signup`, {
         name,
         email,
         password,
@@ -40,7 +42,7 @@ const Register = () => {
     console.log(name, email);
     setPassword("aa");
     try {
-      const response = await axios.post("http://localhost:5001/api/v1/signup", {
+      const response = await axios.post(`${DOMAIN}/api/v1/signup`, {
         name,
         email,
         password,

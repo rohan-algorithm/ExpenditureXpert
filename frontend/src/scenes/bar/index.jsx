@@ -5,9 +5,10 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import Header from 'component/Header';
 
 const MonthlyExpenses = () => {
+
   const [data, setData] = useState([]);
   const [viewType, setViewType] = useState('monthly');
-
+  const DOMAIN = process.env.REACT_APP_DOMAIN;
   useEffect(() => {
     fetchData();
   }, [viewType]);
@@ -15,7 +16,7 @@ const MonthlyExpenses = () => {
   const fetchData = async () => {
     try {
       const userId = sessionStorage.getItem('id');
-      const response = await axios.get(`http://localhost:5001/api/v5/${viewType}/${userId}`);
+      const response = await axios.get(`${DOMAIN}/api/v5/${viewType}/${userId}`);
       setData(response.data);
     } catch (error) {
       console.error('Error fetching expenses:', error);

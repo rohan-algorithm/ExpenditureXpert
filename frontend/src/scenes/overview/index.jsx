@@ -9,12 +9,12 @@ const PieActiveArc = () => {
   const theme = useTheme();
   const [data, setData] = useState([]);
   const [viewType, setViewType] = useState('monthly');
-
+  const DOMAIN = process.env.REACT_APP_DOMAIN;
   useEffect(() => {
     const fetchData = async () => {
       try {
         const userId = sessionStorage.getItem('id');
-        const response = await axios.get(`http://localhost:5001/api/v5/pie/${viewType}/${userId}`);
+        const response = await axios.get(`${DOMAIN}/api/v5/pie/${viewType}/${userId}`);
         const { expensesByCategory } = response.data;
 
         console.log('Fetched data:', expensesByCategory); // Debugging log

@@ -8,6 +8,7 @@ const AddToGroup = ({ onAddToGroup }) => {
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedFriend, setSelectedFriend] = useState('');
+  const DOMAIN = process.env.REACT_APP_DOMAIN;
   const theme = useTheme();
 
   useEffect(() => {
@@ -17,7 +18,7 @@ const AddToGroup = ({ onAddToGroup }) => {
   const fetchFriends = async () => {
     try {
       const id = sessionStorage.getItem('id');
-      const response = await axios.get(`http://localhost:5001/api/v3/friends/${id}`);
+      const response = await axios.get(`${DOMAIN}/api/v3/friends/${id}`);
       setFriends(response.data.friends);
       setLoading(false);
     } catch (error) {

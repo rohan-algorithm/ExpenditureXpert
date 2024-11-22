@@ -43,7 +43,7 @@ const ExpenseTable = ({ dash }) => {
   const [searchInput, setSearchInput] = useState("");
   const [totalPages, setTotalPages] = useState(1);
   const [open, setOpen] = useState(false);
-
+  const DOMAIN = process.env.REACT_APP_DOMAIN;
   let id = sessionStorage.getItem("id");
 
   const categories = ['Food', 'Transportation', 'Utilities', 'Others'];
@@ -92,7 +92,7 @@ const ExpenseTable = ({ dash }) => {
   }
   
 
-    axios.post('http://localhost:5001/api/v2/addExpanse', newExpenseConverted)
+    axios.post(`${DOMAIN}/api/v2/addExpanse`, newExpenseConverted)
     .then(response => {
       console.log('Data sent to the server:', response.data);
       const newExpenseWithId = { ...response.data.expanse, id: response.data.expanse._id };
@@ -110,7 +110,7 @@ const ExpenseTable = ({ dash }) => {
   const fetchData = async () => {
     try {
       const id = sessionStorage.getItem('id');
-      const response = await axios.get(`http://localhost:5001/api/v2/getExpenses/${id}`, {
+      const response = await axios.get(`${DOMAIN}/api/v2/getExpenses/${id}`, {
         params: {
           page: page + 1,
           limit: pageSize,
@@ -129,7 +129,7 @@ const ExpenseTable = ({ dash }) => {
 
   const handleDeleteExpense = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:5001/api/v2/deleteExpense/${id}`);
+      const response = await axios.delete(`${DOMAIN}/api/v2/deleteExpense/${id}`);
       if (response.status === 200) {
         toast.success('Expense deleted successfully');
         setExpenses((prevExpenses) => prevExpenses.filter((expense) => expense._id !== id));
@@ -151,7 +151,7 @@ const ExpenseTable = ({ dash }) => {
 
   const handleUpdateExpense = async () => {
     try {
-      await axios.put(`http://localhost:5001/api/v2/updateExpense/${selectedExpense._id}`, selectedExpense);
+      await axios.put(`${DOMAIN}/api/v2/updateExpense/${selectedExpense._id}`, selectedExpense);
       setOpenEditDialog(false);
       setSelectedExpense(null);
       fetchData();

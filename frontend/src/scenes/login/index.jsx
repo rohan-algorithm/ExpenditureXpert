@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import axios from "axios";
 import {
   Box,
@@ -21,6 +22,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import jwtDecode from "jwt-decode";
 import { login } from "../../state/index"; // Import login action from globalSlice
+
+
+
 
 const Card = styled(Paper)(({ theme }) => ({
   display: 'flex',
@@ -64,6 +68,9 @@ const Auth = () => {
   const dispatch = useDispatch();
 
   const handleSubmit = async (event) => {
+  const DOMAIN = process.env.REACT_APP_DOMAIN;  
+  // console.log("DD"+DOMAIN);
+
     event.preventDefault();
 
     if (!isLogin && password !== confirmPassword) {
@@ -73,24 +80,28 @@ const Auth = () => {
 
     try {
       const endpoint = isLogin ? "signin" : "signup";
+
       console.log(`Submitting to ${endpoint} with email: ${email}, password: ${password}, and name: ${name}`);
-      const response = await axios.post(`http://localhost:5001/api/v1/${endpoint}`, {
+      const response = await axios.post(`${DOMAIN}/api/v1/${endpoint}`, {
         name: !isLogin ? name : undefined, // Only send name if signing up
         email,
         password,
       });
       console.log(response);
+      console.log("Full Response:", response);
+    console.log("Response Data:", response.data);
 
-      if (response.status === 200 || response.status === 201) {
-        console.log(response);
-        sessionStorage.setItem("id", response.data.user._id);
-        dispatch(login({ userId: response.data.user._id }));
-        toast.success(`${isLogin ? "Login" : "Registration"} successful!`);
-        console.log("Navigating to /dashboard");
-        navigate("/dashboard");
-      } else {
-        toast.error(`${isLogin ? "Login" : "Registration"} failed! Please try again.`);
-      }
+
+    const user = response.data?.newUser; // Access `newUser` from the response
+    if (user && user._id) {
+      sessionStorage.setItem("id", user._id); // Store user ID in session storage
+      dispatch(login({ userId: user._id })); // Update global state
+      toast.success(`${isLogin ? "Login" : "Registration"} successful!`);
+      navigate("/dashboard"); // Navigate to dashboard
+    } else {
+      toast.error("Unexpected response structure.");
+      console.error("Invalid response structure:", response.data);
+    }
     } catch (error) {
       toast.error("An error occurred. Please try again.");
       console.log(error);

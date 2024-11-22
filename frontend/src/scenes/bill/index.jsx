@@ -31,6 +31,7 @@ const ExpenseTable = ({ dash }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const theme = useTheme();
+  const DOMAIN = process.env.REACT_APP_DOMAIN; 
 
   useEffect(() => {
     fetchData();
@@ -39,7 +40,7 @@ const ExpenseTable = ({ dash }) => {
   const fetchData = async () => {
     try {
       const id = sessionStorage.getItem('id');
-      const response = await axios.get(`http://localhost:5001/api/v2/getExpenses/${id}`, {
+      const response = await axios.get(`${DOMAIN}/api/v2/getExpenses/${id}`, {
         params: {
           page: currentPage,
           limit: 20,
@@ -56,7 +57,7 @@ const ExpenseTable = ({ dash }) => {
 
   const handleDeleteExpense = async (id) => {
     try {
-      await axios.delete(`http://localhost:5001/api/v2/deleteExpense/${id}`);
+      await axios.delete(`${DOMAIN}/api/v2/deleteExpense/${id}`);
       fetchData();
     } catch (error) {
       console.error('Error deleting expense:', error);
@@ -75,7 +76,7 @@ const ExpenseTable = ({ dash }) => {
 
   const handleUpdateExpense = async () => {
     try {
-      await axios.put(`http://localhost:5001/api/v2/updateExpense/${selectedExpense._id}`, selectedExpense);
+      await axios.put(`${DOMAIN}/api/v2/updateExpense/${selectedExpense._id}`, selectedExpense);
       setOpenEditDialog(false);
       setSelectedExpense(null);
       fetchData();

@@ -6,12 +6,12 @@ import Header from '../../component/Header'; // Adjust the import path as needed
 const LineChartComparison = () => {
   const [xAxisData, setXAxisData] = useState([]);
   const [seriesData, setSeriesData] = useState([]);
-
+  const DOMAIN = process.env.REACT_APP_DOMAIN;
   useEffect(() => {
     const fetchData = async () => {
       try {
         const userId = sessionStorage.getItem('id');
-        const response = await axios.get(`http://localhost:5001/api/v5/monthly/${userId}`);
+        const response = await axios.get(`${DOMAIN}/api/v5/monthly/${userId}`);
         const data = response.data;
 
         // Log the raw data from the backend

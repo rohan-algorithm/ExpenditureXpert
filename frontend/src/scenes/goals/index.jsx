@@ -42,6 +42,9 @@ const GoalForm = () => {
     description: '',
     progress: 0,
   });
+
+  const DOMAIN = process.env.REACT_APP_DOMAIN;
+
   
   useEffect(() => {
     fetchData();
@@ -50,7 +53,7 @@ const GoalForm = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5001/api/v7/getGoals/${uid}`);
+      const response = await axios.get(`${DOMAIN}/api/v7/getGoals/${uid}`);
       setGoals(response.data.goals); // Assuming the response contains goals
       setLoading(false);
     } catch (error) {
@@ -66,7 +69,7 @@ const GoalForm = () => {
 
   const addGoal = async () => {
     try {
-      await axios.post('http://localhost:5001/api/v7/createGoal', { ...newGoal, uid });
+      await axios.post(`${DOMAIN}/api/v7/createGoal`, { ...newGoal, uid });
       await fetchData();
       setNewGoal({
         goalName: '',

@@ -31,7 +31,7 @@ function App() {
           <CssBaseline />
           <Routes>
             <Route path="/login" element={isLoggedIn ? <Navigate to="/dashboard" /> : <Login />} />
-            <Route path="/signup" element={<Signup />} />
+            <Route path="/signup" element={<Login />} />
             <Route path="/" element={isLoggedIn ? <Layout /> : <Home />} />
             {isLoggedIn && (
               <Route element={<Layout />}>

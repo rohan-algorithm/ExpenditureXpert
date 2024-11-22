@@ -23,6 +23,8 @@ const FriendList = () => {
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
+  const DOMAIN = process.env.REACT_APP_DOMAIN;
+
 
   useEffect(() => {
     fetchFriends();
@@ -31,7 +33,7 @@ const FriendList = () => {
   const fetchFriends = async () => {
     try {
       const id = sessionStorage.getItem('id');
-      const response = await axios.get(`http://localhost:5001/api/v3/get-friends/${id}`);
+      const response = await axios.get(`${DOMAIN}/api/v3/get-friends/${id}`);
       setFriends(response.data.friends);
       setLoading(false);
     } catch (error) {
@@ -48,7 +50,7 @@ const FriendList = () => {
     try {
       setAddingFriend(true);
       const id = sessionStorage.getItem('id');
-      await axios.post(`http://localhost:5001/api/v3/add-friend/${id}`, { email: newFriendEmail });
+      await axios.post(`${DOMAIN}/api/v3/add-friend/${id}`, { email: newFriendEmail });
       setNewFriendEmail('');
       fetchFriends();
       toast.success('Friend added successfully');

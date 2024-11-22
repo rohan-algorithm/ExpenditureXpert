@@ -28,6 +28,8 @@ const Dashboard = () => {
   const user = sessionStorage.getItem("id");
   const [open, setOpen] = useState(false);
   const [newBudget, setNewBudget] = useState(0);
+  const DOMAIN = process.env.REACT_APP_DOMAIN;
+
 
   const handleOpen = () => {
     setOpen(true);
@@ -48,7 +50,7 @@ const Dashboard = () => {
   const handleSave = async () => {
     try {
       const response = await axios.put(
-        `http://localhost:5001/api/v4/Updatebalance/${user}`,
+        `${DOMAIN}/api/v4/Updatebalance/${user}`,
         { budget: newBudget }
       );
       setSavings(newBudget); // Assuming savings is updated here
@@ -61,7 +63,7 @@ const Dashboard = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5001/api/v4/dashboard/${user}`
+        `${DOMAIN}/api/v4/dashboard/${user}`
       );
       const { thisMonthExpense, lastMonthExpense, savings } = response.data;
       console.log(response.data);

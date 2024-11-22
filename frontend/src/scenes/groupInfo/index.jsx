@@ -56,10 +56,12 @@ const GroupInfo = () => {
   const { groupId } = location.state;
   const uid = sessionStorage.getItem('id');
 
+  const DOMAIN = process.env.REACT_APP_DOMAIN;
+ 
   
   const fetchGroupInfo = async () => {
     try {
-      const response = await axios.get(`http://localhost:5001/api/v6/getGroupInfo/${groupId}`);
+      const response = await axios.get(`${DOMAIN}/api/v6/getGroupInfo/${groupId}`);
       setGroup(response.data);
       setLoading(false);
     } catch (error) {
@@ -70,7 +72,7 @@ const GroupInfo = () => {
 
   const fetchFriendList = async () => {
     try {
-      const response = await axios.get(`http://localhost:5001/api/v3/get-friends/${uid}`);
+      const response = await axios.get(`${DOMAIN}/api/v3/get-friends/${uid}`);
       setFriendList(response.data.friends);
     } catch (error) {
       console.error('Error fetching friend list:', error);
@@ -79,7 +81,7 @@ const GroupInfo = () => {
 
   const handleAddFriend = async () => {
     try {
-      await axios.post(`http://localhost:5001/api/v6/sendGroupInvitation`, {
+      await axios.post(`${DOMAIN}/api/v6/sendGroupInvitation`, {
         userId: uid,
         invitedUserId: selectedFriendId,
         groupId: groupId,
@@ -184,7 +186,7 @@ const GroupInfo = () => {
         });
       }
   
-      await axios.post(`http://localhost:5001/api/v6/addTransaction`, {
+      await axios.post(`${DOMAIN}/api/v6/addTransaction`, {
         groupId: groupId,
         payerId: payerId,
         payerName: payer.memberName,
